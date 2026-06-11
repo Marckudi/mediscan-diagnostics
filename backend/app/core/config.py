@@ -1,5 +1,6 @@
-from pydantic_settings import BaseSettings
 from functools import lru_cache
+
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -10,6 +11,9 @@ class Settings(BaseSettings):
     anthropic_api_key: str
     claude_model: str = "claude-sonnet-4-6"
     max_tokens: int = 4096
+
+    api_key_enabled: bool = False
+    api_key: str = ""
 
     max_image_size_mb: int = 10
     allowed_image_types: list[str] = ["image/jpeg", "image/png", "image/webp", "image/gif"]
