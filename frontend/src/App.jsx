@@ -3,6 +3,7 @@ import { Activity, Stethoscope, WifiOff } from 'lucide-react'
 import UploadZone from './components/UploadZone'
 import AnalysisForm from './components/AnalysisForm'
 import ReportViewer from './components/ReportViewer'
+import BrandLogo from './components/BrandLogo'
 import { analyzeImage, checkHealth } from './services/api'
 
 export default function App() {
@@ -51,14 +52,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-3">
-          <div className="bg-sky-600 text-white p-2 rounded-lg shadow-sm">
-            <Stethoscope size={20} />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-slate-800 leading-none">MediScan Diagnostics</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Análisis de imágenes médicas por IA</p>
-          </div>
+        <div className="max-w-5xl mx-auto px-6 py-3.5 flex items-center gap-3">
+          <BrandLogo size={38} showText={true} />
           <div className="ml-auto">
             {apiOnline === null && <span className="text-xs text-slate-400">Conectando...</span>}
             {apiOnline === true && (
