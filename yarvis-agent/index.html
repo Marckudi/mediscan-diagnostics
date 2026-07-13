@@ -174,7 +174,7 @@
   <nav class="rail" aria-label="navegación">
     <div class="brand">Y</div>
     <div class="dots" aria-hidden="true"><span>◐</span><span>⌥</span><span>▣</span><span>❑</span><span>⚡</span><span>∿</span></div>
-    <div class="foot">YARVIS · v1.3 · TUYO</div>
+    <div class="foot">YARVIS · v1.5 · TUYO</div>
   </nav>
 
   <section class="stage">
@@ -255,7 +255,9 @@
           <div class="lbl">Cerebro extendido · pocos tokens (opcional)</div>
           <div class="d-note">Con esto YARVIS responde de <b>cualquier tema como Claude</b> y <b>busca en internet</b> en tiempo real. Usa tu propia API key de Anthropic y requiere abrir YARVIS como archivo local (la vista previa bloquea la red). Con Haiku el coste por pregunta es de céntimos.</div>
           <label class="togg"><input type="checkbox" id="cloudOn"> Activar cerebro extendido (respuestas como Claude)</label>
-          <label class="togg"><input type="checkbox" id="cloudWeb"> Buscar en internet cuando haga falta</label>
+          <label class="togg"><input type="checkbox" id="cloudWeb"> Buscar en internet</label>
+          <label class="togg"><input type="checkbox" id="cloudAlways"> Buscar SIEMPRE en internet (datos actuales + fuentes)</label>
+          <label class="togg"><input type="checkbox" id="cloudStream"> Respuestas en vivo (streaming)</label>
           <input id="cloudKey" class="fld" type="password" placeholder="API key de Anthropic (sk-ant-…)" autocomplete="off">
           <div class="row">
             <select id="cloudModel" class="fld" style="flex:1">
@@ -336,29 +338,8 @@ function waveFrame(ts){wc.clearRect(0,0,wv.width,wv.height);const mid=wv.height/
 requestAnimationFrame(waveFrame);
 function setState(sp){targetEnergy=sp?1:0;$("#stateTxt").textContent=sp?"PENSANDO":"EN REPOSO"}
 
-/* ---- seed knowledge (Zoey OS) ---- */
-const SEED=[
- {id:"zoey",icon:"◐",label:"¿Qué es Zoey?",kw:["que es zoey","zoey","plataforma","orquestadora","como funciona","general"],
-  html:"<h4>¿Qué es Zoey?</h4><p>Zoey es la <b>orquestadora central</b> del sistema. El usuario le pide algo y ella decide si lo resuelve directamente o lo <b>delega al companion más adecuado</b>.</p><p>Junto a Zoey hay un equipo de <b>companions</b>: asistentes especializados con persona propia y expertise (marketing, desarrollo, finanzas…). Marc tiene «Companion 8337», con rol de marketing.</p>",src:"§1 · Plataforma"},
- {id:"companions",icon:"❑",label:"Companions y bots",kw:["companion","companions","bots","bot","subagentes","paralelo","equipo","8337"],
-  html:"<h4>Companions y bots</h4><p>Cada companion puede tener hasta <b>10 bots</b>: subagentes enfocados que trabajan <b>en paralelo</b>. El companion reparte el trabajo entre sus bots y junta los resultados.</p>",src:"§1 · Companions"},
- {id:"kb",icon:"▤",label:"Base de conocimiento",kw:["base de conocimiento","conocimiento","documentos","carpetas","semantica","referencias"],
-  html:"<h4>Base de conocimiento de Zoey</h4><p>Espacio donde Zoey guarda documentos e informes en <b>carpetas</b> enlazadas, con búsqueda <b>semántica</b>. Ahí quedó el proyecto Electron de AlphaVision AI (main.js, package.json).</p>",src:"§2 · Conocimiento"},
- {id:"memoria",icon:"❖",label:"¿Qué es la memoria?",kw:["memoria","recuerda","preferencias","hechos","conversaciones pasadas","recall"],
-  html:"<h4>Memoria de Zoey</h4><p>Guarda <b>hechos y preferencias duraderas</b> (Marc: desarrollo, marketing, finanzas) y recupera conversaciones pasadas por tema o fecha.</p>",src:"§3 · Memoria"},
- {id:"integr",icon:"⚡",label:"Integraciones",kw:["integraciones","gmail","calendario","slack","stripe","conectar","correos","eventos"],
-  html:"<h4>Integraciones</h4><p>Zoey puede conectarse a <b>Gmail, calendario, Slack o Stripe</b> y ejecutar acciones reales. Marc <b>no tiene ninguna conectada</b> todavía.</p>",src:"§4 · Integraciones"},
- {id:"plan",icon:"◈",label:"Plan Explorer y límites",kw:["plan","explorer","limites","limitaciones","builder","architect","precio"],
-  html:"<h4>Plan Explorer</h4><table><tr><th>Incluye</th><th>No incluye</th></tr><tr><td>Zoey + hasta 3 companions</td><td>Automatizaciones (cron/webhook)</td></tr><tr><td>Herramientas básicas</td><td>Skills personalizados</td></tr><tr><td>—</td><td>Integraciones custom (API/MCP)</td></tr></table><p style='margin-top:8px'>Lo avanzado está en <b>Builder</b> y <b>Architect</b>.</p>",src:"§5 · Plan"},
- {id:"internet",icon:"◍",label:"Internet y contenido externo",kw:["internet","web","paginas","youtube","tiktok","instagram","transcribir","videos"],
-  html:"<h4>Internet y contenido externo</h4><p>Zoey busca en internet en tiempo real, lee páginas y <b>transcribe vídeos</b> (YouTube, TikTok, Instagram). Con herramientas conectadas ejecuta acciones directas.</p>",src:"§6 · Internet"},
- {id:"macapp",icon:"▣",label:"¿Puede crear una app de Mac?",kw:["app nativa","mac","compilar","codigo","executable","aplicacion","electron","dock","webcatalog"],
-  html:"<h4>¿App nativa de Mac?</h4><p><b>No.</b> Zoey no genera ejecutables (.app) ni compila. Sí puede: preparar el código del proyecto, guiar la terminal (<code>npm install</code>, <code>npm start</code>) y sugerir «Añadir al Dock» o WebCatalog/Unite.</p>",src:"§7 · App de Mac"},
- {id:"voz",icon:"∿",label:"¿Cómo funciona la voz?",kw:["voz","hablar","audio","transcripcion","microfono","canal"],
-  html:"<h4>Cómo funciona la voz</h4><p>Solo cambia el <b>canal</b>: audio→texto, se procesa igual, y la respuesta vuelve a audio. <b>No hay «personalidad de voz» distinta</b>.</p>",src:"§8 · Voz"},
- {id:"proceso",icon:"⟐",label:"¿Cómo llega a sus respuestas?",kw:["como llega","respuestas","proceso","precision","inventa","reversible","irreversible","confirma"],
-  html:"<h4>Cómo responde Zoey</h4><ul><li>Decide si lo resuelve con una herramienta o lo delega.</li><li><b>No inventa</b>: usa una herramienta real antes de responder.</li><li>Acciones irreversibles (borrar, enviar) <b>se confirman</b>.</li></ul>",src:"§9 · Proceso"},
-];
+/* ---- knowledge base (general; Zoey seed removed) ---- */
+const SEED=[];
 const STOP=new Set(["que","los","las","una","uno","con","por","para","del","como","mas","cual","dime","este","esta","eso","esa","sea","son","muy","todo","toda","tienes","puedes","quiero","hay","son","cosa","mejor","the","and","por"]);
 function retrieveSeed(q){
   const nq=norm(q);
@@ -394,8 +375,9 @@ function retrieveBrain(q){
   return best&&bs>=1.2&&bm>=.4?best:null}
 
 /* ---- config (cloud) ---- */
-let cfg=Object.assign({on:false,key:"",model:"claude-haiku-4-5-20251001",max:1024,web:true},store.get("yarvis.cfg",{}));
+let cfg=Object.assign({on:false,key:"",model:"claude-haiku-4-5-20251001",max:1024,web:true,always:true,stream:true},store.get("yarvis.cfg",{}));
 function saveCfg(){store.set("yarvis.cfg",cfg)}
+function buildSys(){let s=SYS;if(cfg.always&&cfg.web)s+=" IMPORTANTE: realiza SIEMPRE una búsqueda web antes de responder —aunque creas saber la respuesta— para dar datos actuales y citar fuentes.";return s}
 function buildContext(q){
   const parts=["Fecha de hoy: "+new Date().toLocaleDateString("es-ES",{weekday:"long",year:"numeric",month:"long",day:"numeric"})+"."];
   if(memoria.length)parts.push("Lo que sabes de Marc:\n"+memoria.slice(0,8).map(m=>"- "+m).join("\n"));
@@ -409,9 +391,9 @@ async function askCloud(q){
   if(!cfg.on)return null;
   if(!cfg.key)return{error:"Enciende el cerebro extendido y pega tu API key de Anthropic en CEREBRO."};
   const ctx=buildContext(q);
-  const body={model:cfg.model,max_tokens:Math.max(256,Math.min(4000,(cfg.max|0)||1024)),system:SYS,
+  const body={model:cfg.model,max_tokens:Math.max(256,Math.min(4000,(cfg.max|0)||1024)),system:buildSys(),
     messages:[{role:"user",content:(ctx?ctx+"\n\n":"")+"Pregunta de Marc: "+q}]};
-  if(cfg.web)body.tools=[{type:"web_search_20250305",name:"web_search",max_uses:4}];
+  if(cfg.web)body.tools=[{type:"web_search_20250305",name:"web_search",max_uses:5}];
   try{
     const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",
       headers:{"x-api-key":cfg.key,"anthropic-version":"2023-06-01","content-type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
@@ -422,44 +404,84 @@ async function askCloud(q){
     (d.content||[]).forEach(b=>{if(b.type==="text"){text+=b.text;
       if(b.citations)b.citations.forEach(c=>{if(c.url)cites.push({url:c.url,title:c.title||c.url})})}});
     text=text.trim()||"(sin respuesta)";
-    const seen=new Set(),ded=[];cites.forEach(c=>{if(!seen.has(c.url)){seen.add(c.url);ded.push(c)}});
-    return{text,cites:ded,usage:d.usage||null};
+    return{text,cites:dedupe(cites),usage:d.usage||null};
   }catch(e){return{error:"No pude conectar con el modelo. El cerebro extendido y la búsqueda web solo funcionan al abrir YARVIS como archivo local en tu equipo (la vista previa bloquea la red)."}}
 }
+function dedupe(cites){const seen=new Set(),o=[];cites.forEach(c=>{if(c.url&&!seen.has(c.url)){seen.add(c.url);o.push(c)}});return o}
+async function askCloudStream(q,onText){
+  if(!cfg.on)return null;
+  if(!cfg.key)return{error:"Enciende el cerebro extendido y pega tu API key de Anthropic en CEREBRO."};
+  const ctx=buildContext(q);
+  const body={model:cfg.model,max_tokens:Math.max(256,Math.min(4000,(cfg.max|0)||1024)),system:buildSys(),stream:true,
+    messages:[{role:"user",content:(ctx?ctx+"\n\n":"")+"Pregunta de Marc: "+q}]};
+  if(cfg.web)body.tools=[{type:"web_search_20250305",name:"web_search",max_uses:5}];
+  let r;
+  try{r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",
+    headers:{"x-api-key":cfg.key,"anthropic-version":"2023-06-01","content-type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify(body)});}
+  catch(e){return{error:"No pude conectar con el modelo. La búsqueda web solo funciona al abrir YARVIS como archivo local (la vista previa bloquea la red)."}}
+  if(!r.ok){let t="";try{t=await r.text()}catch(e){}return{error:"Error "+r.status+(t?" · "+t.slice(0,160):"")}}
+  if(!r.body||!r.body.getReader)return askCloud(q); // no streaming support -> fallback
+  const reader=r.body.getReader(),dec=new TextDecoder();
+  let buf="",text="",cites=[],usage=null,searched=false;
+  try{
+    while(true){const rd=await reader.read();if(rd.done)break;buf+=dec.decode(rd.value,{stream:true});
+      let nl;while((nl=buf.indexOf("\n"))>=0){const line=buf.slice(0,nl).trim();buf=buf.slice(nl+1);
+        if(line.indexOf("data:")!==0)continue;const data=line.slice(5).trim();if(!data||data==="[DONE]")continue;
+        let ev;try{ev=JSON.parse(data)}catch(e){continue}
+        if(ev.type==="content_block_start"&&ev.content_block&&ev.content_block.type==="server_tool_use")searched=true;
+        else if(ev.type==="content_block_delta"&&ev.delta){
+          if(ev.delta.type==="text_delta"&&ev.delta.text){text+=ev.delta.text;if(onText)onText(text)}
+          else if(ev.delta.type==="citations_delta"&&ev.delta.citation&&ev.delta.citation.url)cites.push({url:ev.delta.citation.url,title:ev.delta.citation.title||ev.delta.citation.url});
+        }
+        else if(ev.type==="message_start"&&ev.message&&ev.message.usage)usage=Object.assign({},ev.message.usage);
+        else if(ev.type==="message_delta"&&ev.usage)usage=Object.assign(usage||{},ev.usage);
+      }
+    }
+  }catch(e){if(!text)return{error:"Se cortó la conexión durante la respuesta."}}
+  text=text.trim()||"(sin respuesta)";
+  return{text,cites:dedupe(cites),usage,searched};
+}
+function citesHTML(cites){if(!cites||!cites.length)return"";
+  return '<div class="src">FUENTES WEB</div><ul class="cites">'+cites.slice(0,6).map(c=>'<li><a href="'+esc(c.url)+'" target="_blank" rel="noopener noreferrer">'+esc(c.title)+'</a></li>').join("")+"</ul>"}
 
 /* ---- chat rendering ---- */
 const log=$("#log");
 let history=store.get("yarvis.hist",[]);
 let lastUserQ="",pendingCorrection=null;
-function render(who,html,withActs,entryId){
-  const m=document.createElement("div");m.className="msg "+who;
-  let acts="";
-  if(who==="ai"&&withActs){
-    acts='<div class="acts">'+
-      '<button class="act" data-a="copy">⎘ copiar</button>'+
-      '<button class="act" data-a="mem">📌 memoria</button>'+
-      '<button class="act" data-a="up">👍</button>'+
-      '<button class="act" data-a="down">👎 corregir</button></div>';
-  }
-  m.innerHTML='<div class="who">'+(who==="ai"?"Y":"M")+'</div><div class="col"><div class="bubble">'+html+acts+'</div></div>';
-  const bub=m.querySelector(".bubble");
-  m.querySelectorAll(".act").forEach(b=>b.addEventListener("click",()=>{
+const ACTS='<div class="acts"><button class="act" data-a="copy">⎘ copiar</button><button class="act" data-a="mem">📌 memoria</button><button class="act" data-a="up">👍</button><button class="act" data-a="down">👎 corregir</button></div>';
+function attachActs(bub,html,entryId){
+  bub.querySelectorAll(".act").forEach(b=>b.addEventListener("click",()=>{
     const a=b.dataset.a,txt=plain(html);
     if(a==="copy"){if(navigator.clipboard)navigator.clipboard.writeText(txt);toast("Copiado")}
     else if(a==="mem"){addMem(txt.slice(0,200));toast("Guardado en memoria")}
     else if(a==="up"){if(entryId){const e=brain.find(x=>x.id===entryId);if(e){e.weight=(e.weight||0)+1;saveBrain()}}toast("Gracias, lo priorizaré")}
     else if(a==="down"){pendingCorrection=lastUserQ||"";$("#input").focus();$("#input").placeholder="Escribe la respuesta correcta…";toast("Escribe la respuesta correcta y la aprendo")}
   }));
+}
+function render(who,html,withActs,entryId){
+  const m=document.createElement("div");m.className="msg "+who;
+  const acts=(who==="ai"&&withActs)?ACTS:"";
+  m.innerHTML='<div class="who">'+(who==="ai"?"Y":"M")+'</div><div class="col"><div class="bubble">'+html+acts+'</div></div>';
+  const bub=m.querySelector(".bubble");
+  if(who==="ai"&&withActs)attachActs(bub,html,entryId);
   log.appendChild(m);log.scrollTop=log.scrollHeight;return bub;
+}
+// fill an existing bubble in place (no reorder): used for the reveal animation and streaming
+function fillAI(bub,html,src,id){
+  const full=html+(src?'<div class="src">FUENTE · '+src+'</div>':"");
+  bub.classList.remove("cursor");
+  bub.innerHTML=full+ACTS;
+  attachActs(bub,full,id);
+  pushHist("ai",full,id);log.scrollTop=log.scrollHeight;
 }
 function pushHist(who,html,id){history.push({who,html,id:id||null});store.set("yarvis.hist",history.slice(-60))}
 function speak(text){if(!voiceOn||!("speechSynthesis"in window))return;const u=new SpeechSynthesisUtterance(text);u.lang="es-ES";u.rate=1.03;u.pitch=.9;const v=speechSynthesis.getVoices().find(v=>/es/i.test(v.lang));if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u)}
 function emit(html,src,id){
   setState(true);
-  const finalHTML=html+(src?'<div class="src">FUENTE · '+src+'</div>':"");
-  const bub=render("ai","",false);bub.classList.add("cursor");const msg=bub.closest(".msg");
-  let step=0;const iv=setInterval(()=>{if(++step>=6){clearInterval(iv);msg.remove();
-    render("ai",finalHTML,true,id);pushHist("ai",finalHTML,id);log.scrollTop=log.scrollHeight;setTimeout(()=>setState(false),600);speak(plain(html));}},reduce?40:150);
+  const bub=render("ai","",false);bub.classList.add("cursor");
+  let step=0;const iv=setInterval(()=>{if(++step>=6){clearInterval(iv);
+    fillAI(bub,html,src,id);setTimeout(()=>setState(false),600);speak(plain(html));}},reduce?40:150);
 }
 
 /* ---- main handler ---- */
@@ -477,13 +499,15 @@ async function handle(q){
     if(parts.length>=2){addLearned(parts[0],parts.slice(1).join(" "),"enseñado por Marc",1)}
     else{addLearned("",body,"enseñado por Marc",1)}
     return emit("<p>Aprendido ✓ Lo tendré en cuenta a partir de ahora.</p>","Aprendizaje",null)}
-  if(/(que|cuanto).*(cuesta|pagar|precio|gratis)|es gratis|de quien eres|eres mio|dependes de zoey/.test(nq))
-    return emit("<h4>Soy tuyo y gratis</h4><p>Soy una app <b>independiente</b>: un único archivo en tu navegador. Sin servidor, sin cuenta, <b>0€</b>. Tengo mi propia memoria y aprendo de lo que me enseñas. El <b>cerebro extendido</b> (Haiku) es opcional y gasta muy pocos tokens, solo cuando no sé algo — y luego lo guardo para que sea gratis.</p>","YARVIS",null);
-  if(/(que|cual).*(sabes|recuerdas).*(de mi|sobre mi)|que sabes de mi|que recuerdas/.test(nq)){
+  if(/\beres gratis\b|\bes gratis\b|cuanto cuestas|tengo que pagar (por ti|para usarte)|de quien eres|eres mio\b|dependes de/.test(nq))
+    return emit("<h4>Soy tuyo y gratis</h4><p>Soy una app <b>independiente</b>: un único archivo en tu navegador. Sin servidor, sin cuenta, <b>0€</b>. Tengo mi propia memoria y aprendo de lo que me enseñas. El <b>cerebro extendido</b> (Haiku + búsqueda web) es opcional y gasta muy pocos tokens.</p>","YARVIS",null);
+  if(/que puedes hacer|para que sirves|que sabes hacer|tus capacidades|que herramientas tienes/.test(nq))
+    return emit("<h4>Qué puedo hacer</h4><ul><li>Responder de <b>cualquier tema</b> y <b>buscar en internet</b> en tiempo real, citando fuentes (con el cerebro extendido).</li><li>Recordar lo tuyo en <b>memoria</b> y aprender lo que me enseñes.</li><li>Importar y buscar en tus <b>documentos</b>.</li><li>Escribir en vivo (streaming), dictado y lectura por voz.</li></ul>","YARVIS",null);
+  if(/(que|cual).*(sabes|recuerdas).*(de mi|sobre mi)|que sabes de mi|que recuerdas de mi/.test(nq)){
     const list=memoria.length?"<ul>"+memoria.map(m=>"<li>"+esc(m)+"</li>").join("")+"</ul>":"<p>Aún no tengo notas sobre ti. Dime «recuerda que…».</p>";
     return emit("<h4>Lo que recuerdo de ti</h4>"+list,"Memoria",null)}
-  if(/(quien|que) eres|presentate/.test(nq))
-    return emit("<h4>Quién soy</h4><p>Soy <b>YARVIS</b>, tu núcleo personal e independiente. Corro en local, gratis, aprendo con el tiempo y me sé el informe de <b>Zoey OS</b>.</p>","YARVIS",null);
+  if(/^(quien|que) eres|presentate/.test(nq))
+    return emit("<h4>Quién soy</h4><p>Soy <b>YARVIS</b>, tu asistente personal e independiente. Con el cerebro extendido respondo de <b>cualquier tema y busco en internet como Claude</b>; en local soy gratis y aprendo con el tiempo lo que me enseñas.</p>","YARVIS",null);
   if(/^(hola|hey|buenas|hi|que tal|como estas)\b/.test(nq))
     return emit("<p>Buenas, Marc. Soy <b>YARVIS</b>. Pregúntame, enséñame algo con <code>aprende:</code> o abre <b>CEREBRO</b> para importar tus documentos.</p>","YARVIS",null);
   // CLOUD-FIRST: when the extended brain is on, answer like Claude (with web search)
@@ -491,26 +515,23 @@ async function handle(q){
   // OFFLINE / free local mode: only answer if we actually know it
   const seed=retrieveSeed(raw);if(seed)return emit(seed.html,seed.src,null);
   const b=retrieveBrain(raw);if(b)return emit(fmt(b.text),(b.source||"aprendido")+" · local · 0 tokens",b.id);
-  return emit("<h4>Aún no lo sé (modo local)</h4><p>En local solo respondo lo que me has enseñado y el informe de Zoey OS — por eso no me lo invento.</p><p>Para responder de <b>cualquier tema y buscar en internet</b> como Claude, enciende el <b>Cerebro extendido</b> en <b>CEREBRO</b> (pega tu API key) y abre YARVIS como archivo local. O enséñame esto con <code>aprende: …</code>.</p>","YARVIS",null);
+  return emit("<h4>Aún no lo sé (modo local)</h4><p>En local solo respondo lo que me has enseñado — por eso no me lo invento.</p><p>Para responder de <b>cualquier tema y buscar en internet</b> como Claude, enciende el <b>Cerebro extendido</b> en <b>CEREBRO</b> (pega tu API key) y abre YARVIS como archivo local. O enséñame esto con <code>aprende: …</code>.</p>","YARVIS",null);
 }
 async function respondCloud(raw){
   setState(true);
-  const tb=render("ai",'<span class="cursor">'+(cfg.web?"buscando y razonando…":"pensando…")+'</span>',false);
-  const tmsg=tb.closest(".msg");
-  const res=await askCloud(raw);
-  tmsg.remove();
+  const bub=render("ai",'<span class="cursor">'+(cfg.web?"buscando en internet…":"pensando…")+'</span>',false);
+  const onText=t=>{bub.innerHTML=fmt(t)+'<span class="cursor"></span>';log.scrollTop=log.scrollHeight};
+  const res=cfg.stream?await askCloudStream(raw,onText):await askCloud(raw);
   if(res&&res.text){
-    let html=fmt(res.text);
-    if(res.cites&&res.cites.length)html+='<div class="src">FUENTES WEB</div><ul class="cites">'+res.cites.slice(0,6).map(c=>'<li><a href="'+esc(c.url)+'" target="_blank" rel="noopener noreferrer">'+esc(c.title)+'</a></li>').join("")+"</ul>";
-    // cache only stable (non-web) answers so repeats are free; keep web answers fresh
-    let id=null;if(!(res.cites&&res.cites.length))id=addLearned(raw,res.text,"cerebro extendido",0);
+    const hasWeb=res.cites&&res.cites.length;
+    const html=fmt(res.text)+citesHTML(res.cites);
+    let id=null;if(!hasWeb)id=addLearned(raw,res.text,"cerebro extendido",0); // cache stable answers; keep web fresh
     const toks=res.usage?((res.usage.input_tokens||0)+(res.usage.output_tokens||0)):null;
-    const src=(res.cites&&res.cites.length?"cerebro extendido · web":"cerebro extendido")+(toks!=null?" · "+toks+" tokens":"")+(id?" · guardado":"");
-    return emit(html,src,id);
+    const src=(hasWeb?"cerebro extendido · web":"cerebro extendido")+(toks!=null?" · "+toks+" tokens":"")+(id?" · guardado":"");
+    fillAI(bub,html,src,id);setState(false);speak(plain(res.text));return;
   }
-  setState(false);
   const err=res&&res.error?"<p class='src'>"+esc(res.error)+"</p>":"";
-  return emit("<h4>No pude responder</h4>"+err+"<p>Comprueba tu API key en <b>CEREBRO</b>, o abre YARVIS como archivo local si estás en la vista previa.</p>","YARVIS",null);
+  fillAI(bub,"<h4>No pude responder</h4>"+err+"<p>Comprueba tu API key en <b>CEREBRO</b>, o abre YARVIS como archivo local si estás en la vista previa.</p>","YARVIS",null);setState(false);
 }
 function command(c){
   const parts=c.trim().split(/\s+/),cmd=norm(parts[0]||""),arg=parts.slice(1).join(" ");
@@ -529,7 +550,14 @@ function command(c){
 
 /* ---- memoria ---- */
 let memoria=store.get("yarvis.memoria",null);
-if(memoria===null){memoria=["Marc está en el plan Explorer de Zoey (hasta 3 companions).","Le interesan desarrollo, marketing y finanzas.","Tiene 1 companion: «Companion 8337» (marketing).","Aún no tiene integraciones conectadas."];store.set("yarvis.memoria",memoria)}
+if(memoria===null){memoria=[];store.set("yarvis.memoria",memoria)}
+// migration: purge any Zoey-related facts/knowledge from memory + learned brain
+if(!store.get("yarvis.purgeZoey",false)){
+  const isZoey=t=>/zoey|companion 8337|plan explorer|alphavision/i.test(String(t));
+  memoria=memoria.filter(m=>!isZoey(m));store.set("yarvis.memoria",memoria);
+  const n0=brain.length;brain=brain.filter(e=>!isZoey(e.q+" "+e.text+" "+e.source));if(brain.length!==n0)saveBrain();
+  store.set("yarvis.purgeZoey",true);
+}
 function renderMem(){const l=$("#memList");l.innerHTML="";if(!memoria.length){l.innerHTML='<div class="d-note">Sin notas todavía.</div>';return}
   memoria.forEach((t,i)=>{const d=document.createElement("div");d.className="mem";d.innerHTML='<span class="dot">▸</span><span class="txt"></span><button class="del" aria-label="borrar">×</button>';d.querySelector(".txt").textContent=t;d.querySelector(".del").onclick=()=>{memoria.splice(i,1);store.set("yarvis.memoria",memoria);renderMem()};l.appendChild(d)})}
 function addMem(t){t=String(t).trim();if(!t)return;memoria.unshift(t);store.set("yarvis.memoria",memoria);renderMem()}
@@ -569,12 +597,14 @@ $("#fileInput").onchange=e=>{const files=[...e.target.files];let total=0,pending
 $("#pasteBtn").onclick=()=>{const t=$("#pasteBox").value.trim();if(!t){toast("Pega algo primero");return}const n=importDoc("nota pegada",t);$("#pasteBox").value="";toast("Aprendidos "+n+" fragmentos")};
 
 /* cloud settings */
-function loadCfgUI(){$("#cloudOn").checked=!!cfg.on;$("#cloudWeb").checked=!!cfg.web;$("#cloudKey").value=cfg.key||"";$("#cloudModel").value=cfg.model;$("#cloudMax").value=cfg.max}
+function loadCfgUI(){$("#cloudOn").checked=!!cfg.on;$("#cloudWeb").checked=!!cfg.web;$("#cloudAlways").checked=!!cfg.always;$("#cloudStream").checked=!!cfg.stream;$("#cloudKey").value=cfg.key||"";$("#cloudModel").value=cfg.model;$("#cloudMax").value=cfg.max}
 function updateNet(){const on=cfg.on&&cfg.key;const net=on&&cfg.web;const p=$("#netPill");
   p.innerHTML='<span class="led '+(on?"":"warn")+'" style="'+(on?"":"background:#5f594f;box-shadow:none")+'"></span> '+(net?"INTERNET":on?"IA":"SOLO LOCAL")}
 $("#cloudOn").onchange=e=>{cfg.on=e.target.checked;saveCfg();updateNet();toast(cfg.on?"Cerebro extendido activado":"Cerebro extendido desactivado")};
-$("#cloudWeb").onchange=e=>{cfg.web=e.target.checked;saveCfg();updateNet();toast(cfg.web?"Búsqueda web activada":"Búsqueda web desactivada")};
-$("#cloudKey").onchange=e=>{cfg.key=e.target.value.trim();saveCfg();updateNet()};
+$("#cloudWeb").onchange=e=>{cfg.web=e.target.checked;if(!cfg.web){cfg.always=false;$("#cloudAlways").checked=false}saveCfg();updateNet();toast(cfg.web?"Búsqueda web activada":"Búsqueda web desactivada")};
+$("#cloudAlways").onchange=e=>{cfg.always=e.target.checked;if(cfg.always){cfg.web=true;$("#cloudWeb").checked=true}saveCfg();updateNet();toast(cfg.always?"Buscaré SIEMPRE en internet":"Búsqueda solo cuando haga falta")};
+$("#cloudStream").onchange=e=>{cfg.stream=e.target.checked;saveCfg();toast(cfg.stream?"Streaming activado":"Streaming desactivado")};
+$("#cloudKey").onchange=e=>{cfg.key=e.target.value.trim();if(cfg.key&&!cfg.on){cfg.on=true;$("#cloudOn").checked=true;toast("Cerebro extendido activado")}saveCfg();updateNet()};
 $("#cloudModel").onchange=e=>{cfg.model=e.target.value;saveCfg()};
 $("#cloudMax").onchange=e=>{cfg.max=Math.max(256,Math.min(4000,parseInt(e.target.value)||1024));e.target.value=cfg.max;saveCfg()};
 
@@ -611,7 +641,7 @@ if(SR){rec=new SR();rec.lang="es-ES";rec.interimResults=true;rec.continuous=fals
 
 /* ---- composer + chips ---- */
 $("#form").addEventListener("submit",e=>{e.preventDefault();const v=$("#input").value.trim();if(!v)return;$("#input").value="";if(pendingCorrection===null)$("#input").placeholder="Pregúntame o enséñame…  (/ayuda)";handle(v)});
-["¿Qué es Zoey?","Companions y bots","Mi plan Explorer","¿App de Mac?","¿Eres gratis?","aprende: mi color favorito :: naranja"].forEach(c=>{const b=document.createElement("button");b.className="chip";b.type="button";b.textContent=c;b.onclick=()=>handle(c);$("#chips").appendChild(b)});
+["Últimas noticias de hoy","¿Qué puedes hacer?","¿Eres gratis?","aprende: mi color favorito :: naranja"].forEach(c=>{const b=document.createElement("button");b.className="chip";b.type="button";b.textContent=c;b.onclick=()=>handle(c);$("#chips").appendChild(b)});
 
 /* ---- command palette ---- */
 const pal=$("#pal"),palInput=$("#palInput"),palList=$("#palList");
@@ -643,7 +673,7 @@ addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()===
 /* ---- init ---- */
 loadCfgUI();updateNet();renderMem();renderBrainStats();
 const boot=$("#boot");
-const lines=[["> inicializando YARVIS · edición de Marc ...","b"],["  cargando conocimiento base (Zoey OS) ......... OK","ok"],
+const lines=[["> inicializando YARVIS · edición de Marc ...","b"],["  asistente general · búsqueda web lista ........ OK","ok"],
   ["  cargando cerebro aprendido ("+brain.length+" ítems) ...","ok"],["  memoria propia (local) ....................... OK","ok"],
   ["  cerebro extendido: "+(cfg.on&&cfg.key?(cfg.web?"INTERNET":"IA"):"apagado"),"ok"],["> YARVIS ONLINE · 100% TUYO","b"]];
 let li=0;
