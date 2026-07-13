@@ -109,6 +109,7 @@
   .mic.live{background:var(--rec);color:#fff;border-color:var(--rec);animation:mp 1.1s ease-in-out infinite}
   @keyframes mp{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,.5)}50%{box-shadow:0 0 0 7px rgba(255,77,77,0)}}
   .send{background:var(--accent);color:#160b02}.send:hover{background:var(--accent-2)}
+  .stop{background:var(--rec);color:#fff}.stop:hover{filter:brightness(1.1)}
   .composer .meta{display:flex;align-items:center;justify-content:space-between;color:var(--muted-2);font-size:10px;letter-spacing:1px;gap:8px}
 
   .drawer{position:absolute;inset:0;z-index:9;background:var(--bg2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s cubic-bezier(.2,.7,.2,1)}
@@ -174,7 +175,7 @@
   <nav class="rail" aria-label="navegación">
     <div class="brand">Y</div>
     <div class="dots" aria-hidden="true"><span>◐</span><span>⌥</span><span>▣</span><span>❑</span><span>⚡</span><span>∿</span></div>
-    <div class="foot">YARVIS · v1.5 · TUYO</div>
+    <div class="foot">YARVIS · v1.6 · TUYO</div>
   </nav>
 
   <section class="stage">
@@ -211,7 +212,8 @@
       <div class="field">
         <button type="button" class="icobtn mic" id="mic" title="dictar por voz" aria-label="dictar">🎙</button>
         <input id="input" placeholder="Pregúntame o enséñame…  (/ayuda)" aria-label="mensaje">
-        <button class="icobtn send" type="submit" aria-label="enviar">↑</button>
+        <button class="icobtn send" id="send" type="submit" aria-label="enviar">↑</button>
+        <button class="icobtn stop" id="stop" type="button" aria-label="detener" title="detener" style="display:none">⏹</button>
       </div>
       <div class="meta"><span id="micHint">🎙 dictar · 📌 guardar · 👍/👎 corregir · aprende con el tiempo</span></div>
     </form>
@@ -377,7 +379,7 @@ function retrieveBrain(q){
 /* ---- config (cloud) ---- */
 let cfg=Object.assign({on:false,key:"",model:"claude-haiku-4-5-20251001",max:1024,web:true,always:true,stream:true},store.get("yarvis.cfg",{}));
 function saveCfg(){store.set("yarvis.cfg",cfg)}
-function buildSys(){let s=SYS;if(cfg.always&&cfg.web)s+=" IMPORTANTE: realiza SIEMPRE una búsqueda web antes de responder —aunque creas saber la respuesta— para dar datos actuales y citar fuentes.";return s}
+function buildSys(q){let s=SYS;if(cfg.always&&cfg.web)s+=" IMPORTANTE: realiza SIEMPRE una búsqueda web antes de responder —aunque creas saber la respuesta— para dar datos actuales y citar fuentes.";const ctx=buildContext(q||"");if(ctx)s+="\n\n"+ctx;return s}
 function buildContext(q){
   const parts=["Fecha de hoy: "+new Date().toLocaleDateString("es-ES",{weekday:"long",year:"numeric",month:"long",day:"numeric"})+"."];
   if(memoria.length)parts.push("Lo que sabes de Marc:\n"+memoria.slice(0,8).map(m=>"- "+m).join("\n"));
@@ -386,18 +388,29 @@ function buildContext(q){
   if(rel.length)parts.push("Notas que te enseñó Marc (úsalas si aplican):\n"+rel.join("\n---\n"));
   return parts.join("\n\n");
 }
-const SYS="Eres YARVIS, el asistente personal e independiente de Marc — actúa como un asistente general capaz y directo, al estilo de Claude. Responde en español con precisión y sin rodeos. Usa la memoria y las notas de Marc cuando sean relevantes. Cuando la pregunta dependa de información actual, cambiante o que no sepas con certeza (noticias, mercados, precios, fechas, datos recientes), USA la herramienta de búsqueda web y cita las fuentes. No inventes: si algo no lo sabes ni lo encuentras, dilo.";
-async function askCloud(q){
+const SYS="Eres YARVIS, el asistente personal e independiente de Marc — actúa como un asistente general capaz y directo, al estilo de Claude. Responde en español con precisión y sin rodeos. Mantienes el hilo de la conversación: usa los mensajes anteriores para resolver preguntas de seguimiento (p. ej. «¿y por qué?»). Usa la memoria y las notas de Marc cuando sean relevantes. Cuando la pregunta dependa de información actual, cambiante o que no sepas con certeza (noticias, mercados, precios, fechas, datos recientes), USA la herramienta de búsqueda web y cita las fuentes. No inventes: si algo no lo sabes ni lo encuentras, dilo.";
+function buildMessages(q){
+  let msgs=convo.slice(-16).map(t=>({role:t.role,content:t.text}));
+  while(msgs.length&&msgs[0].role!=="user")msgs.shift();
+  if(!msgs.length||msgs[msgs.length-1].role!=="user")msgs.push({role:"user",content:q});
+  // collapse accidental same-role repeats to satisfy the API's alternation
+  const out=[];msgs.forEach(m=>{const last=out[out.length-1];if(last&&last.role===m.role)last.content+="\n"+m.content;else out.push(Object.assign({},m))});
+  return out;
+}
+function reqBody(q,stream){
+  const b={model:cfg.model,max_tokens:Math.max(256,Math.min(4000,(cfg.max|0)||1024)),system:buildSys(q),messages:buildMessages(q)};
+  if(stream)b.stream=true;
+  if(cfg.web)b.tools=[{type:"web_search_20250305",name:"web_search",max_uses:5}];
+  return b;
+}
+const API="https://api.anthropic.com/v1/messages";
+const HEAD={"x-api-key":"","anthropic-version":"2023-06-01","content-type":"application/json","anthropic-dangerous-direct-browser-access":"true"};
+function headers(){return Object.assign({},HEAD,{"x-api-key":cfg.key})}
+async function askCloud(q,signal){
   if(!cfg.on)return null;
   if(!cfg.key)return{error:"Enciende el cerebro extendido y pega tu API key de Anthropic en CEREBRO."};
-  const ctx=buildContext(q);
-  const body={model:cfg.model,max_tokens:Math.max(256,Math.min(4000,(cfg.max|0)||1024)),system:buildSys(),
-    messages:[{role:"user",content:(ctx?ctx+"\n\n":"")+"Pregunta de Marc: "+q}]};
-  if(cfg.web)body.tools=[{type:"web_search_20250305",name:"web_search",max_uses:5}];
   try{
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",
-      headers:{"x-api-key":cfg.key,"anthropic-version":"2023-06-01","content-type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
-      body:JSON.stringify(body)});
+    const r=await fetch(API,{method:"POST",headers:headers(),body:JSON.stringify(reqBody(q,false)),signal});
     if(!r.ok){let t="";try{t=await r.text()}catch(e){}return{error:"Error "+r.status+(t?" · "+t.slice(0,160):"")}}
     const d=await r.json();
     let text="",cites=[];
@@ -405,27 +418,24 @@ async function askCloud(q){
       if(b.citations)b.citations.forEach(c=>{if(c.url)cites.push({url:c.url,title:c.title||c.url})})}});
     text=text.trim()||"(sin respuesta)";
     return{text,cites:dedupe(cites),usage:d.usage||null};
-  }catch(e){return{error:"No pude conectar con el modelo. El cerebro extendido y la búsqueda web solo funcionan al abrir YARVIS como archivo local en tu equipo (la vista previa bloquea la red)."}}
+  }catch(e){if(e&&e.name==="AbortError")return{aborted:true,text:""};
+    return{error:"No pude conectar con el modelo. El cerebro extendido y la búsqueda web solo funcionan al abrir YARVIS como archivo local en tu equipo (la vista previa bloquea la red)."}}
 }
 function dedupe(cites){const seen=new Set(),o=[];cites.forEach(c=>{if(c.url&&!seen.has(c.url)){seen.add(c.url);o.push(c)}});return o}
-async function askCloudStream(q,onText){
+async function askCloudStream(q,onText,signal){
   if(!cfg.on)return null;
   if(!cfg.key)return{error:"Enciende el cerebro extendido y pega tu API key de Anthropic en CEREBRO."};
-  const ctx=buildContext(q);
-  const body={model:cfg.model,max_tokens:Math.max(256,Math.min(4000,(cfg.max|0)||1024)),system:buildSys(),stream:true,
-    messages:[{role:"user",content:(ctx?ctx+"\n\n":"")+"Pregunta de Marc: "+q}]};
-  if(cfg.web)body.tools=[{type:"web_search_20250305",name:"web_search",max_uses:5}];
   let r;
-  try{r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",
-    headers:{"x-api-key":cfg.key,"anthropic-version":"2023-06-01","content-type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
-    body:JSON.stringify(body)});}
-  catch(e){return{error:"No pude conectar con el modelo. La búsqueda web solo funciona al abrir YARVIS como archivo local (la vista previa bloquea la red)."}}
+  try{r=await fetch(API,{method:"POST",headers:headers(),body:JSON.stringify(reqBody(q,true)),signal});}
+  catch(e){if(e&&e.name==="AbortError")return{aborted:true,text:""};
+    return{error:"No pude conectar con el modelo. La búsqueda web solo funciona al abrir YARVIS como archivo local (la vista previa bloquea la red)."}}
   if(!r.ok){let t="";try{t=await r.text()}catch(e){}return{error:"Error "+r.status+(t?" · "+t.slice(0,160):"")}}
-  if(!r.body||!r.body.getReader)return askCloud(q); // no streaming support -> fallback
+  if(!r.body||!r.body.getReader)return askCloud(q,signal); // no streaming support -> fallback
   const reader=r.body.getReader(),dec=new TextDecoder();
-  let buf="",text="",cites=[],usage=null,searched=false;
+  let buf="",text="",cites=[],usage=null,searched=false,aborted=false;
   try{
-    while(true){const rd=await reader.read();if(rd.done)break;buf+=dec.decode(rd.value,{stream:true});
+    while(true){if(signal&&signal.aborted){aborted=true;break}
+      const rd=await reader.read();if(rd.done)break;buf+=dec.decode(rd.value,{stream:true});
       let nl;while((nl=buf.indexOf("\n"))>=0){const line=buf.slice(0,nl).trim();buf=buf.slice(nl+1);
         if(line.indexOf("data:")!==0)continue;const data=line.slice(5).trim();if(!data||data==="[DONE]")continue;
         let ev;try{ev=JSON.parse(data)}catch(e){continue}
@@ -438,9 +448,12 @@ async function askCloudStream(q,onText){
         else if(ev.type==="message_delta"&&ev.usage)usage=Object.assign(usage||{},ev.usage);
       }
     }
-  }catch(e){if(!text)return{error:"Se cortó la conexión durante la respuesta."}}
-  text=text.trim()||"(sin respuesta)";
-  return{text,cites:dedupe(cites),usage,searched};
+  }catch(e){if(e&&e.name==="AbortError")aborted=true;else if(!text)return{error:"Se cortó la conexión durante la respuesta."}}
+  try{reader.cancel()}catch(e){}
+  text=text.trim();
+  if(!text&&aborted)return{aborted:true,text:""};
+  text=text||"(sin respuesta)";
+  return{text,cites:dedupe(cites),usage,searched,aborted};
 }
 function citesHTML(cites){if(!cites||!cites.length)return"";
   return '<div class="src">FUENTES WEB</div><ul class="cites">'+cites.slice(0,6).map(c=>'<li><a href="'+esc(c.url)+'" target="_blank" rel="noopener noreferrer">'+esc(c.title)+'</a></li>').join("")+"</ul>"}
@@ -448,7 +461,9 @@ function citesHTML(cites){if(!cites||!cites.length)return"";
 /* ---- chat rendering ---- */
 const log=$("#log");
 let history=store.get("yarvis.hist",[]);
-let lastUserQ="",pendingCorrection=null;
+let convo=store.get("yarvis.convo",[]);
+function pushConvo(role,text){text=String(text).replace(/\s+/g," ").trim().slice(0,4000);if(!text)return;convo.push({role,text});convo=convo.slice(-40);store.set("yarvis.convo",convo)}
+let lastUserQ="",pendingCorrection=null,genAbort=null;
 const ACTS='<div class="acts"><button class="act" data-a="copy">⎘ copiar</button><button class="act" data-a="mem">📌 memoria</button><button class="act" data-a="up">👍</button><button class="act" data-a="down">👎 corregir</button></div>';
 function attachActs(bub,html,entryId){
   bub.querySelectorAll(".act").forEach(b=>b.addEventListener("click",()=>{
@@ -473,7 +488,7 @@ function fillAI(bub,html,src,id){
   bub.classList.remove("cursor");
   bub.innerHTML=full+ACTS;
   attachActs(bub,full,id);
-  pushHist("ai",full,id);log.scrollTop=log.scrollHeight;
+  pushHist("ai",full,id);pushConvo("assistant",plain(html));log.scrollTop=log.scrollHeight;
 }
 function pushHist(who,html,id){history.push({who,html,id:id||null});store.set("yarvis.hist",history.slice(-60))}
 function speak(text){if(!voiceOn||!("speechSynthesis"in window))return;const u=new SpeechSynthesisUtterance(text);u.lang="es-ES";u.rate=1.03;u.pitch=.9;const v=speechSynthesis.getVoices().find(v=>/es/i.test(v.lang));if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u)}
@@ -489,6 +504,7 @@ async function handle(q){
   const raw=String(q).trim();if(!raw)return;
   render("me",esc(raw),false);pushHist("me",esc(raw));
   const nq=norm(raw);
+  if(pendingCorrection===null)pushConvo("user",raw);
   if(pendingCorrection!==null&&!raw.startsWith("/")){const qq=pendingCorrection;pendingCorrection=null;$("#input").placeholder="Pregúntame o enséñame…  (/ayuda)";addLearned(qq,raw,"corrección de Marc",2);return emit("<p>Corregido y aprendido ✓ La próxima vez responderé eso.</p>","Aprendizaje",null)}
   lastUserQ=raw;
   if(raw.startsWith("/"))return command(raw.slice(1));
@@ -521,15 +537,18 @@ async function respondCloud(raw){
   setState(true);
   const bub=render("ai",'<span class="cursor">'+(cfg.web?"buscando en internet…":"pensando…")+'</span>',false);
   const onText=t=>{bub.innerHTML=fmt(t)+'<span class="cursor"></span>';log.scrollTop=log.scrollHeight};
-  const res=cfg.stream?await askCloudStream(raw,onText):await askCloud(raw);
+  genAbort=new AbortController();setGenerating(true);
+  let res;try{res=cfg.stream?await askCloudStream(raw,onText,genAbort.signal):await askCloud(raw,genAbort.signal)}
+  finally{setGenerating(false);genAbort=null}
   if(res&&res.text){
     const hasWeb=res.cites&&res.cites.length;
-    const html=fmt(res.text)+citesHTML(res.cites);
-    let id=null;if(!hasWeb)id=addLearned(raw,res.text,"cerebro extendido",0); // cache stable answers; keep web fresh
+    const html=fmt(res.text)+citesHTML(res.cites)+(res.aborted?'<div class="src">DETENIDO POR TI</div>':"");
+    let id=null;if(!hasWeb&&!res.aborted)id=addLearned(raw,res.text,"cerebro extendido",0); // cache stable answers; keep web/partial fresh
     const toks=res.usage?((res.usage.input_tokens||0)+(res.usage.output_tokens||0)):null;
     const src=(hasWeb?"cerebro extendido · web":"cerebro extendido")+(toks!=null?" · "+toks+" tokens":"")+(id?" · guardado":"");
-    fillAI(bub,html,src,id);setState(false);speak(plain(res.text));return;
+    fillAI(bub,html,src,id);setState(false);if(!res.aborted)speak(plain(res.text));return;
   }
+  if(res&&res.aborted){bub.classList.remove("cursor");bub.innerHTML="<p><i>Generación detenida.</i></p>";setState(false);return}
   const err=res&&res.error?"<p class='src'>"+esc(res.error)+"</p>":"";
   fillAI(bub,"<h4>No pude responder</h4>"+err+"<p>Comprueba tu API key en <b>CEREBRO</b>, o abre YARVIS como archivo local si estás en la vista previa.</p>","YARVIS",null);setState(false);
 }
@@ -542,7 +561,7 @@ function command(c){
     case"recuerda":case"recordar":if(arg){addMem(arg);return emit("<p>Anotado en memoria.</p>","YARVIS",null)}return emit("<p>Uso: <code>/recuerda &lt;texto&gt;</code></p>","YARVIS",null);
     case"aprende":case"aprender":if(arg){const p=arg.split(/\s*(?:::|=>|->)\s*/);if(p.length>=2)addLearned(p[0],p.slice(1).join(" "),"enseñado por Marc",1);else addLearned("",arg,"enseñado por Marc",1);return emit("<p>Aprendido ✓</p>","Aprendizaje",null)}return emit("<p>Uso: <code>/aprende pregunta :: respuesta</code></p>","YARVIS",null);
     case"exportar":case"export":exportMd();return emit("<p>Conversación exportada.</p>","YARVIS",null);
-    case"limpiar":case"clear":history=[];store.set("yarvis.hist",history);log.innerHTML="";return emit("<p>Conversación borrada.</p>","YARVIS",null);
+    case"limpiar":case"clear":history=[];convo=[];store.set("yarvis.hist",history);store.set("yarvis.convo",convo);log.innerHTML="";return emit("<p>Conversación borrada (también el hilo de contexto).</p>","YARVIS",null);
     case"voz":setVoice(!voiceOn);return emit("<p>Lectura en voz <b>"+(voiceOn?"activada":"desactivada")+"</b>.</p>","YARVIS",null);
     default:return emit("<p>Comando desconocido. Prueba <code>/ayuda</code>.</p>","YARVIS",null);
   }
@@ -640,7 +659,9 @@ if(SR){rec=new SR();rec.lang="es-ES";rec.interimResults=true;rec.continuous=fals
 }else{mic.style.display="none"}
 
 /* ---- composer + chips ---- */
-$("#form").addEventListener("submit",e=>{e.preventDefault();const v=$("#input").value.trim();if(!v)return;$("#input").value="";if(pendingCorrection===null)$("#input").placeholder="Pregúntame o enséñame…  (/ayuda)";handle(v)});
+function setGenerating(on){$("#send").style.display=on?"none":"grid";$("#stop").style.display=on?"grid":"none"}
+$("#stop").onclick=()=>{if(genAbort){genAbort.abort();toast("Deteniendo…")}};
+$("#form").addEventListener("submit",e=>{e.preventDefault();if(genAbort)return;const v=$("#input").value.trim();if(!v)return;$("#input").value="";if(pendingCorrection===null)$("#input").placeholder="Pregúntame o enséñame…  (/ayuda)";handle(v)});
 ["Últimas noticias de hoy","¿Qué puedes hacer?","¿Eres gratis?","aprende: mi color favorito :: naranja"].forEach(c=>{const b=document.createElement("button");b.className="chip";b.type="button";b.textContent=c;b.onclick=()=>handle(c);$("#chips").appendChild(b)});
 
 /* ---- command palette ---- */
