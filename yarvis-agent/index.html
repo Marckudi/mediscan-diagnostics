@@ -1,10 +1,10 @@
-<title>YARVIS — Núcleo Zoey OS</title>
+<title>YARVIS — Núcleo personal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
   :root{
     --bg:#0a0806;--bg2:#0d0b08;--panel:#121009;--panel-2:#17140d;
     --line:rgba(255,122,26,.10);--line-strong:rgba(255,122,26,.28);
-    --accent:#ff7a1a;--accent-2:#ffae5c;--accent-dim:#b8531a;
+    --accent:#ff7a1a;--accent-2:#ffae5c;
     --text:#ece6db;--muted:#8a8175;--muted-2:#5f594f;
     --good:#4ec98a;--rec:#ff4d4d;
     --mono:"SF Mono",ui-monospace,"JetBrains Mono","Cascadia Code",Menlo,Monaco,Consolas,monospace;
@@ -20,7 +20,7 @@
   body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:6;
     background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0,rgba(0,0,0,.14) 1px,transparent 1px,transparent 3px);
     mix-blend-mode:overlay;opacity:.5}
-  .app{position:relative;z-index:2;height:100vh;height:100dvh;display:grid;grid-template-columns:58px 1fr minmax(370px,450px)}
+  .app{position:relative;z-index:2;height:100vh;height:100dvh;display:grid;grid-template-columns:58px 1fr minmax(380px,460px)}
 
   .rail{border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;
     padding:18px 0;gap:22px;background:linear-gradient(180deg,var(--bg2),transparent)}
@@ -59,7 +59,7 @@
   .c-head{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
   .c-head .av{width:26px;height:26px;border-radius:7px;background:var(--accent);color:#160b02;display:grid;place-items:center;font-weight:700;box-shadow:0 0 16px rgba(255,122,26,.5)}
   .c-head b{letter-spacing:2px}
-  .c-head .tools{margin-left:auto;display:flex;gap:6px}
+  .c-head .tools{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
   .tbtn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:5px 9px;
     font-family:var(--mono);font-size:10px;letter-spacing:.8px;cursor:pointer;transition:.15s}
   .tbtn:hover{color:var(--accent);border-color:var(--line-strong)}
@@ -72,7 +72,7 @@
   .msg.ai .who{background:rgba(255,122,26,.12);color:var(--accent);border:1px solid var(--line-strong)}
   .msg.me .who{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.12)}
   .col{min-width:0;flex:1}
-  .bubble{border-radius:12px;padding:11px 14px;border:1px solid var(--line);font-size:13px}
+  .bubble{border-radius:12px;padding:11px 14px;border:1px solid var(--line);font-size:13px;word-wrap:break-word;overflow-wrap:anywhere}
   .msg.ai .bubble{background:var(--panel-2)}
   .msg.me{flex-direction:row-reverse}.msg.me .bubble{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
   .bubble h4{margin:0 0 6px;font-size:12px;letter-spacing:1px;color:var(--accent-2);text-transform:uppercase}
@@ -83,7 +83,7 @@
   .bubble th,.bubble td{border:1px solid var(--line-strong);padding:6px 8px;text-align:left;vertical-align:top}
   .bubble th{color:var(--accent)}
   .bubble .src{margin-top:9px;font-size:10px;color:var(--muted-2);letter-spacing:1px}
-  .acts{display:flex;gap:6px;margin-top:8px}
+  .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
   .act{background:transparent;border:1px solid var(--line);color:var(--muted-2);border-radius:6px;padding:3px 8px;
     font-family:var(--mono);font-size:10px;cursor:pointer;transition:.15s}
   .act:hover{color:var(--accent);border-color:var(--line-strong)}
@@ -106,33 +106,45 @@
   .mic.live{background:var(--rec);color:#fff;border-color:var(--rec);animation:mp 1.1s ease-in-out infinite}
   @keyframes mp{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,.5)}50%{box-shadow:0 0 0 7px rgba(255,77,77,0)}}
   .send{background:var(--accent);color:#160b02}.send:hover{background:var(--accent-2)}
-  .composer .meta{display:flex;align-items:center;justify-content:space-between;color:var(--muted-2);font-size:10px;letter-spacing:1px}
+  .composer .meta{display:flex;align-items:center;justify-content:space-between;color:var(--muted-2);font-size:10px;letter-spacing:1px;gap:8px}
 
-  /* memoria drawer */
   .drawer{position:absolute;inset:0;z-index:9;background:var(--bg2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s cubic-bezier(.2,.7,.2,1)}
   .drawer.open{transform:none}
   .d-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
   .d-head h3{margin:0;font-size:12px;letter-spacing:3px;color:var(--accent)}
   .d-head .x{margin-left:auto;background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer}
-  .d-body{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+  .d-body{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
   .d-note{color:var(--muted);font-size:11px;line-height:1.6}
   .mem{display:flex;align-items:flex-start;gap:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px}
   .mem .dot{color:var(--accent);flex:0 0 auto;margin-top:2px}
-  .mem .txt{flex:1;min-width:0}
+  .mem .txt{flex:1;min-width:0;overflow-wrap:anywhere}
   .mem .del{background:transparent;border:0;color:var(--muted-2);cursor:pointer;font-size:14px}
   .mem .del:hover{color:var(--rec)}
   .d-add{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px}
-  .d-add input{flex:1;background:var(--panel-2);border:1px solid var(--line-strong);border-radius:9px;color:var(--text);
-    font-family:var(--mono);font-size:12px;padding:8px 10px;outline:0}
-  .d-add button{background:var(--accent);color:#160b02;border:0;border-radius:9px;padding:0 14px;font-family:var(--mono);cursor:pointer}
+  .fld{background:var(--panel-2);border:1px solid var(--line-strong);border-radius:9px;color:var(--text);
+    font-family:var(--mono);font-size:12px;padding:8px 10px;outline:0;width:100%}
+  .fld:focus{border-color:var(--accent)}
+  .d-add .fld{flex:1}
+  .d-add button,.btn{background:var(--accent);color:#160b02;border:0;border-radius:9px;padding:8px 14px;font-family:var(--mono);cursor:pointer;font-size:12px}
+  .btn.ghost{background:transparent;border:1px solid var(--line-strong);color:var(--muted)}
+  .btn.ghost:hover{color:var(--accent);border-color:var(--accent)}
+  .sec{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+  .sec:first-child{border-top:0;padding-top:0}
+  .sec .lbl{font-size:10px;letter-spacing:2px;color:var(--accent);text-transform:uppercase}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .stats{display:flex;gap:8px;flex-wrap:wrap}
+  .stat{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:8px 12px;flex:1;min-width:90px}
+  .stat b{display:block;color:var(--accent-2);font-size:18px;font-variant-numeric:tabular-nums}
+  .stat span{font-size:10px;color:var(--muted-2);letter-spacing:1px}
+  textarea.fld{resize:vertical;min-height:64px;line-height:1.5}
+  select.fld{cursor:pointer}
+  .togg{display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;color:var(--muted);font-size:12px}
+  .togg input{accent-color:var(--accent);width:16px;height:16px}
 
-  /* command palette */
-  .pal{position:fixed;inset:0;z-index:20;display:none;align-items:flex-start;justify-content:center;
-    padding-top:12vh;background:rgba(5,4,3,.6);backdrop-filter:blur(3px)}
+  .pal{position:fixed;inset:0;z-index:20;display:none;align-items:flex-start;justify-content:center;padding-top:12vh;background:rgba(5,4,3,.6);backdrop-filter:blur(3px)}
   .pal.open{display:flex}
   .pal-box{width:min(560px,92vw);background:var(--panel);border:1px solid var(--line-strong);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
-  .pal-box input{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--text);
-    font-family:var(--mono);font-size:15px;padding:16px 18px;outline:0}
+  .pal-box input{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--text);font-family:var(--mono);font-size:15px;padding:16px 18px;outline:0}
   .pal-list{max-height:52vh;overflow-y:auto;padding:6px}
   .pal-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:9px;cursor:pointer;color:var(--text)}
   .pal-item .ic{color:var(--accent);flex:0 0 22px;text-align:center}
@@ -141,8 +153,7 @@
   .pal-empty{padding:20px;text-align:center;color:var(--muted-2);font-size:12px}
 
   .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);z-index:30;
-    background:var(--panel-2);border:1px solid var(--line-strong);color:var(--text);padding:10px 16px;border-radius:10px;
-    font-size:12px;opacity:0;transition:.25s;pointer-events:none}
+    background:var(--panel-2);border:1px solid var(--line-strong);color:var(--text);padding:10px 16px;border-radius:10px;font-size:12px;opacity:0;transition:.25s;pointer-events:none;max-width:80vw;text-align:center}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
   @media (max-width:900px){
@@ -150,7 +161,7 @@
     .app{grid-template-columns:1fr;height:auto;min-height:100dvh}
     .rail{flex-direction:row;justify-content:space-between;padding:12px 16px;border-right:0;border-bottom:1px solid var(--line)}
     .rail .foot{writing-mode:horizontal-tb;transform:none;margin-top:0}.rail .dots{flex-direction:row}
-    .core-wrap{height:40vh}.console{border-left:0;border-top:1px solid var(--line);height:78vh}
+    .core-wrap{height:38vh}.console{border-left:0;border-top:1px solid var(--line);height:80vh}
     .status .kbd{display:none}
   }
   @media (prefers-reduced-motion:reduce){.cursor::after,.mic.live{animation:none}}
@@ -160,21 +171,21 @@
   <nav class="rail" aria-label="navegación">
     <div class="brand">Y</div>
     <div class="dots" aria-hidden="true"><span>◐</span><span>⌥</span><span>▣</span><span>❑</span><span>⚡</span><span>∿</span></div>
-    <div class="foot">YARVIS · v1.2 · TUYO</div>
+    <div class="foot">YARVIS · v1.3 · TUYO</div>
   </nav>
 
   <section class="stage">
     <header class="topbar">
-      <div class="title"><h1>YARVIS</h1><span class="tm">™</span><small>EDICIÓN DE MARC · 100% LOCAL</small></div>
+      <div class="title"><h1>YARVIS</h1><span class="tm">™</span><small>EDICIÓN DE MARC · APRENDE CON EL TIEMPO</small></div>
       <div class="status">
-        <span class="pill"><span class="led"></span> INDEPENDIENTE · GRATIS</span>
+        <span class="pill"><span class="led"></span> LOCAL · GRATIS</span>
         <span class="pill" id="statePill"><span class="led warn"></span> <span id="stateTxt">EN REPOSO</span></span>
-        <span class="kbd" id="palOpen">⌘K · comandos</span>
+        <span class="kbd" id="palOpen">⌘K</span>
         <span id="clock">--:--:--</span>
       </div>
     </header>
     <div class="core-wrap">
-      <div class="hint">·  HABLA O ESCRIBE A YARVIS  ·</div>
+      <div class="hint">·  HABLA, ESCRIBE O ENSÉÑAME  ·</div>
       <canvas id="core"></canvas>
       <div class="core-label"><div class="big">Y A R V I S</div><canvas class="wave" id="wave" width="440" height="52"></canvas></div>
       <div id="boot" aria-hidden="true"></div>
@@ -185,6 +196,7 @@
     <div class="c-head">
       <div class="av">Y</div><b>YARVIS</b>
       <div class="tools">
+        <button class="tbtn" id="brainBtn">CEREBRO</button>
         <button class="tbtn" id="memBtn">MEMORIA</button>
         <button class="tbtn" id="voiceBtn" title="leer respuestas en voz alta">VOZ</button>
         <button class="tbtn" id="exportBtn" title="exportar conversación">⤓</button>
@@ -195,28 +207,78 @@
     <form class="composer" id="form" autocomplete="off">
       <div class="field">
         <button type="button" class="icobtn mic" id="mic" title="dictar por voz" aria-label="dictar">🎙</button>
-        <input id="input" placeholder="Pregunta a YARVIS…  (prueba /ayuda)" aria-label="mensaje">
+        <input id="input" placeholder="Pregúntame o enséñame…  (/ayuda)" aria-label="mensaje">
         <button class="icobtn send" type="submit" aria-label="enviar">↑</button>
       </div>
-      <div class="meta"><span id="micHint">🎙 dictado · ⤓ exportar · 📌 guardar en memoria</span><span>IA · fuente: informe Zoey OS</span></div>
+      <div class="meta"><span id="micHint">🎙 dictar · 📌 guardar · 👍/👎 corregir · aprende con el tiempo</span></div>
     </form>
 
-    <!-- memoria drawer -->
-    <div class="drawer" id="drawer" aria-hidden="true">
-      <div class="d-head"><h3>MEMORIA</h3><button class="x" id="drawerX" aria-label="cerrar">×</button></div>
-      <div class="d-note" style="padding:12px 16px 0">Hechos y preferencias que YARVIS recuerda entre sesiones. Guarda respuestas con 📌 o añade notas abajo.</div>
+    <!-- MEMORIA -->
+    <div class="drawer" id="memDrawer" aria-hidden="true">
+      <div class="d-head"><h3>MEMORIA</h3><button class="x" data-close="memDrawer" aria-label="cerrar">×</button></div>
+      <div class="d-note" style="padding:12px 16px 0">Hechos y preferencias que YARVIS recuerda sobre ti entre sesiones.</div>
       <div class="d-body" id="memList"></div>
-      <form class="d-add" id="memForm"><input id="memInput" placeholder="Recordar que…" aria-label="nueva memoria"><button type="submit">+</button></form>
+      <form class="d-add" id="memForm"><input id="memInput" class="fld" placeholder="Recordar que…" aria-label="nueva memoria"><button type="submit">+</button></form>
+    </div>
+
+    <!-- CEREBRO -->
+    <div class="drawer" id="brainDrawer" aria-hidden="true">
+      <div class="d-head"><h3>CEREBRO</h3><button class="x" data-close="brainDrawer" aria-label="cerrar">×</button></div>
+      <div class="d-body">
+        <div class="sec">
+          <div class="lbl">Lo que sé</div>
+          <div class="stats" id="brainStats"></div>
+          <div class="d-note">Cuanto más me enseñas e importas, mejor respondo — y todo se guarda en tu equipo, gratis.</div>
+        </div>
+
+        <div class="sec">
+          <div class="lbl">Enseñarme algo</div>
+          <input id="teachQ" class="fld" placeholder="Tema o pregunta (ej. mi horario)">
+          <textarea id="teachA" class="fld" placeholder="Lo que debo responder / recordar…"></textarea>
+          <div class="row"><button class="btn" id="teachBtn">Aprender</button><span class="d-note">o escribe <code>aprende: …</code> en el chat</span></div>
+        </div>
+
+        <div class="sec">
+          <div class="lbl">Importar documentos</div>
+          <div class="row">
+            <button class="btn ghost" id="importFileBtn">Subir .txt / .md / .json</button>
+            <input type="file" id="fileInput" accept=".txt,.md,.markdown,.json,text/plain" multiple hidden>
+          </div>
+          <textarea id="pasteBox" class="fld" placeholder="…o pega aquí texto para que lo aprenda"></textarea>
+          <button class="btn" id="pasteBtn">Aprender del texto pegado</button>
+        </div>
+
+        <div class="sec">
+          <div class="lbl">Cerebro extendido · pocos tokens (opcional)</div>
+          <div class="d-note">Solo se usa cuando NO sé algo en local, y guarda la respuesta para que la próxima vez sea gratis. Requiere abrir YARVIS como archivo local (la vista previa bloquea la red) y tu propia API key de Anthropic.</div>
+          <label class="togg"><input type="checkbox" id="cloudOn"> Activar cerebro extendido</label>
+          <input id="cloudKey" class="fld" type="password" placeholder="API key de Anthropic (sk-ant-…)" autocomplete="off">
+          <div class="row">
+            <select id="cloudModel" class="fld" style="flex:1">
+              <option value="claude-haiku-4-5-20251001">Haiku 4.5 · recomendado (más barato)</option>
+              <option value="claude-sonnet-5">Sonnet 5 · equilibrado</option>
+              <option value="claude-opus-4-8">Opus 4.8 · máximo</option>
+            </select>
+            <input id="cloudMax" class="fld" type="number" min="64" max="2000" step="32" style="width:110px" title="máx. tokens de respuesta">
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="lbl">Copia de seguridad</div>
+          <div class="row">
+            <button class="btn ghost" id="brainExport">Exportar cerebro (.json)</button>
+            <button class="btn ghost" id="brainImportBtn">Importar cerebro</button>
+            <input type="file" id="brainImportInput" accept=".json,application/json" hidden>
+          </div>
+          <button class="btn ghost" id="brainWipe" style="align-self:flex-start">Borrar lo aprendido</button>
+        </div>
+      </div>
     </div>
   </aside>
 </div>
 
-<!-- command palette -->
 <div class="pal" id="pal" role="dialog" aria-label="paleta de comandos">
-  <div class="pal-box">
-    <input id="palInput" placeholder="Buscar tema o comando…" aria-label="buscar">
-    <div class="pal-list" id="palList"></div>
-  </div>
+  <div class="pal-box"><input id="palInput" placeholder="Buscar tema o comando…" aria-label="buscar"><div class="pal-list" id="palList"></div></div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -224,20 +286,21 @@
 "use strict";
 const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
 const $=s=>document.querySelector(s);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const store={get(k,f){try{const v=localStorage.getItem(k);return v==null?f:JSON.parse(v)}catch(e){return f}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const norm=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+function plain(html){const d=document.createElement("div");d.innerHTML=html;return d.textContent.replace(/\s+/g," ").trim()}
+function fmt(text){return String(text).trim().split(/\n{2,}/).map(p=>"<p>"+esc(p).replace(/\n/g,"<br>")+"</p>").join("")}
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),1900)}
 
-/* ---------- storage (safe) ---------- */
-const store={
-  get(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}},
-  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-};
-
-/* ---------- clock ---------- */
+/* ---- clock ---- */
 setInterval(()=>{$("#clock").textContent=new Date().toLocaleTimeString("es-ES",{hour12:false})},1000);
 
-/* ---------- core sphere ---------- */
+/* ---- core sphere ---- */
 const cv=$("#core"),cx=cv.getContext("2d");let W,H,DPR;
-function fit(){DPR=Math.min(devicePixelRatio||1,2);const r=cv.getBoundingClientRect();
-  W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;cx.setTransform(DPR,0,0,DPR,0,0)}
+function fit(){DPR=Math.min(devicePixelRatio||1,2);const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;cx.setTransform(DPR,0,0,DPR,0,0)}
 addEventListener("resize",fit);fit();
 const N=760,pts=[];
 for(let i=0;i<N;i++){const y=1-(i/(N-1))*2,r=Math.sqrt(1-y*y),t=i*2.399963;pts.push([Math.cos(t)*r,y,Math.sin(t)*r])}
@@ -249,192 +312,278 @@ function draw(ts){
   const ax=Math.sin(ts/4200)*.35,cosR=Math.cos(rot),sinR=Math.sin(rot),cosX=Math.cos(ax),sinX=Math.sin(ax);
   const puls=1+Math.sin(ts/900)*.02+energy*.06;
   cx.save();cx.translate(cxp,cyp);
-  for(let a=0;a<3;a++){cx.beginPath();const rr=R*(1.28+a*.14)*puls,start=rot*(a%2?-1:1.4)+a;
-    cx.arc(0,0,rr,start,start+Math.PI*(.5+a*.18));cx.strokeStyle=`rgba(255,122,26,${.20-a*.05})`;cx.lineWidth=1;cx.stroke()}
+  for(let a=0;a<3;a++){cx.beginPath();const rr=R*(1.28+a*.14)*puls,start=rot*(a%2?-1:1.4)+a;cx.arc(0,0,rr,start,start+Math.PI*(.5+a*.18));cx.strokeStyle="rgba(255,122,26,"+(.20-a*.05)+")";cx.lineWidth=1;cx.stroke()}
   cx.beginPath();cx.arc(0,0,R*1.62*puls,0,6.283);cx.strokeStyle="rgba(255,122,26,.06)";cx.lineWidth=1;cx.stroke();cx.restore();
-  for(let i=0;i<N;i++){let[x,y,z]=pts[i];
+  for(let i=0;i<N;i++){let p=pts[i],x=p[0],y=p[1],z=p[2];
     let x1=x*cosR-z*sinR,z1=x*sinR+z*cosR,y1=y*cosX-z1*sinX,z2=y*sinX+z1*cosX;
     const noise=1+(energy*.10)*Math.sin(i*12.9+ts/260);
-    const px=cxp+x1*R*puls*noise,py=cyp+y1*R*puls*noise,depth=(z2+1)/2;
-    const size=depth*1.9+.2,alpha=.12+depth*.78;
+    const px=cxp+x1*R*puls*noise,py=cyp+y1*R*puls*noise,depth=(z2+1)/2,size=depth*1.9+.2,alpha=.12+depth*.78;
     cx.beginPath();cx.arc(px,py,size,0,6.283);
-    cx.fillStyle=depth>.72?`rgba(255,${170+Math.round(depth*60)},${90+Math.round(depth*40)},${alpha})`:`rgba(255,122,26,${alpha})`;cx.fill()}
+    cx.fillStyle=depth>.72?"rgba(255,"+(170+Math.round(depth*60))+","+(90+Math.round(depth*40))+","+alpha+")":"rgba(255,122,26,"+alpha+")";cx.fill()}
   const g=cx.createRadialGradient(cxp,cyp,0,cxp,cyp,R*.85);
-  g.addColorStop(0,`rgba(255,150,60,${.16+energy*.22})`);g.addColorStop(1,"rgba(255,120,26,0)");
+  g.addColorStop(0,"rgba(255,150,60,"+(.16+energy*.22)+")");g.addColorStop(1,"rgba(255,120,26,0)");
   cx.fillStyle=g;cx.beginPath();cx.arc(cxp,cyp,R*.85,0,6.283);cx.fill();
   requestAnimationFrame(draw)}
 requestAnimationFrame(draw);
-
 const wv=$("#wave"),wc=wv.getContext("2d");
 function waveFrame(ts){wc.clearRect(0,0,wv.width,wv.height);const mid=wv.height/2;wc.lineWidth=2;wc.strokeStyle="rgba(255,122,26,.75)";wc.beginPath();
   for(let x=0;x<wv.width;x++){const amp=2+energy*22,y=mid+Math.sin(x/16+ts/220)*amp*Math.sin(x/wv.width*Math.PI);x?wc.lineTo(x,y):wc.moveTo(x,y)}
   wc.stroke();requestAnimationFrame(waveFrame)}
 requestAnimationFrame(waveFrame);
-function setState(sp){targetEnergy=sp?1:0;$("#stateTxt").textContent=sp?"RESPONDIENDO":"EN REPOSO"}
+function setState(sp){targetEnergy=sp?1:0;$("#stateTxt").textContent=sp?"PENSANDO":"EN REPOSO"}
 
-/* ---------- knowledge base ---------- */
-const KB=[
- {id:"zoey",icon:"◐",label:"¿Qué es Zoey?",kw:["que es zoey","zoey","plataforma","orquestadora","como funciona","general","que es"],
-  html:`<h4>¿Qué es Zoey?</h4><p>Zoey es la <b>orquestadora central</b> del sistema. El usuario le pide algo y ella decide si lo resuelve directamente o lo <b>delega al companion más adecuado</b> según el tipo de tarea.</p><p>Junto a Zoey hay un equipo de <b>companions</b>: asistentes especializados con persona propia, expertise concreto (marketing, desarrollo, finanzas, investigación…) y un color de identificación único. Ahora mismo Marc tiene un companion, «Companion 8337», con rol de marketing.</p>`,src:"§1 · Plataforma"},
- {id:"companions",icon:"❑",label:"Companions y bots",kw:["companion","companions","bots","bot","subagentes","subagente","paralelo","equipo","8337","10 bots"],
-  html:`<h4>Companions y bots</h4><p>Cada companion puede tener hasta <b>10 bots propios</b>: subagentes enfocados en tareas muy concretas que trabajan <b>en paralelo</b>.</p><p>Se usan para trabajos grandes —analizar 20 documentos, generar contenido para varios canales a la vez— el companion reparte el trabajo entre sus bots y luego junta los resultados.</p>`,src:"§1 · Companions"},
- {id:"kb",icon:"▤",label:"Base de conocimiento",kw:["base de conocimiento","conocimiento","documentos","carpetas","semantica","buscar","referencias","informes"],
-  html:`<h4>Base de conocimiento</h4><p>Es el espacio donde Zoey guarda documentos, informes, planes o cualquier material generado en las conversaciones, organizados en <b>carpetas</b> y enlazados con referencias. Zoey busca de forma <b>semántica</b>, no solo por coincidencia exacta.</p><p>Ejemplo real: ahí quedó guardado el proyecto de la app de Electron para AlphaVision AI (main.js, package.json e instrucciones paso a paso).</p>`,src:"§2 · Conocimiento"},
- {id:"memoria",icon:"❖",label:"¿Qué es la memoria?",kw:["memoria","recuerda","preferencias","hechos","conversaciones pasadas","recall","fechas","duraderas"],
-  html:`<h4>Memoria de Zoey</h4><p>Zoey guarda <b>hechos y preferencias duraderas</b> del usuario (por ejemplo, que a Marc le interesan desarrollo, marketing y finanzas). También recupera conversaciones pasadas por tema o rango de fechas, sin que el usuario repita el contexto.</p>`,src:"§3 · Memoria"},
- {id:"integr",icon:"⚡",label:"Integraciones",kw:["integraciones","integracion","gmail","calendario","slack","stripe","conectar","correos","eventos","herramientas externas"],
-  html:`<h4>Integraciones</h4><p>La plataforma puede conectarse con herramientas externas como <b>Gmail, calendario, Slack o Stripe</b>, y ejecutar acciones reales (enviar correos, crear eventos…).</p><p>Actualmente Marc <b>no tiene ninguna integración conectada</b> todavía.</p>`,src:"§4 · Integraciones"},
- {id:"plan",icon:"◈",label:"Plan Explorer y límites",kw:["plan","explorer","limites","limitaciones","incluye","builder","architect","precio","cuanto"],
-  html:`<h4>Plan Explorer</h4><p>Marc está en el plan <b>Explorer</b>:</p><table><tr><th>Incluye</th><th>No incluye</th></tr><tr><td>Zoey + hasta 3 companions</td><td>Automatizaciones (cron/webhook)</td></tr><tr><td>Herramientas básicas (búsqueda, conocimiento, memoria)</td><td>Skills personalizados</td></tr><tr><td>—</td><td>Integraciones custom (API/MCP)</td></tr></table><p style="margin-top:8px">Esas funciones están en los planes <b>Builder</b> y <b>Architect</b>.</p>`,src:"§5 · Plan"},
- {id:"internet",icon:"◍",label:"Internet y contenido externo",kw:["internet","web","paginas","youtube","tiktok","instagram","transcribir","videos","tiempo real","buscar en internet"],
-  html:`<h4>Internet y contenido externo</h4><p>Zoey puede <b>buscar en internet en tiempo real</b>, leer páginas web completas y <b>transcribir vídeos</b> de YouTube, TikTok, Instagram u otras plataformas. Con herramientas conectadas, ejecuta acciones directas (enviar, crear, modificar).</p>`,src:"§6 · Internet"},
- {id:"macapp",icon:"▣",label:"¿Puede crear una app de Mac?",kw:["app nativa","mac","compilar","codigo","executable","app","aplicacion","electron","dock","webcatalog","unite",".app","instalar"],
-  html:`<h4>¿Puede crear una app nativa de Mac?</h4><p><b>No.</b> Zoey no puede generar ejecutables (.app), compilar código ni entregar una app nativa lista para instalar.</p><p>Lo que <b>sí</b> puede:</p><ul><li>Preparar todo el código y los archivos de un proyecto (ej. el proyecto Electron guardado en conocimiento).</li><li>Guiar paso a paso en la terminal (VSCode, <code>npm install</code>, <code>npm start</code>…).</li><li>Alternativas sin código: «Añadir al Dock» en Safari, o WebCatalog/Unite para convertir una web en app de escritorio.</li></ul>`,src:"§7 · App de Mac"},
- {id:"voz",icon:"∿",label:"¿Cómo funciona la voz?",kw:["voz","hablar","audio","transcripcion","personalidad de voz","microfono","canal"],
-  html:`<h4>Cómo funciona la voz</h4><p>Al usar voz solo cambia el <b>canal de entrada/salida</b>: el audio se convierte a texto, Zoey lo procesa igual que un mensaje escrito y la respuesta se convierte de vuelta a audio. <b>No hay una «personalidad de voz» distinta</b>.</p><p>A veces las transcripciones generan errores o fragmentos sueltos por ruido de reconocimiento.</p>`,src:"§8 · Voz"},
- {id:"proceso",icon:"⟐",label:"¿Cómo llega a sus respuestas?",kw:["como llega","respuestas","proceso","precision","inventa","confidencial","reversible","irreversible","confirma","decide"],
-  html:`<h4>Cómo llega Zoey a sus respuestas</h4><p>Los detalles internos son confidenciales. Lo transparente:</p><ul><li>Interpreta la petición y decide si la resuelve con una herramienta o la <b>delega</b> a un companion.</li><li><b>No inventa</b>: usa una herramienta real antes de responder.</li><li>Si no lo sabe o no lo confirma una herramienta, lo dice.</li><li>Acciones reversibles se ejecutan directas; las irreversibles (borrar, enviar) <b>se confirman</b> antes.</li></ul>`,src:"§9 · Proceso"},
- {id:"alpha",icon:"◇",label:"Referencia: AlphaVision AI",kw:["alphavision","app de escritorio","proyecto electron","main.js","package.json","referencia"],
-  html:`<h4>Referencia: AlphaVision AI</h4><p>Proyecto guardado en la base de conocimiento: <b>«AlphaVision AI — App de Escritorio para Mac (Electron)»</b>, con el código (main.js, package.json) e instrucciones paso a paso para ejecutarlo en local.</p>`,src:"Referencias"},
+/* ---- seed knowledge (Zoey OS) ---- */
+const SEED=[
+ {id:"zoey",icon:"◐",label:"¿Qué es Zoey?",kw:["que es zoey","zoey","plataforma","orquestadora","como funciona","general"],
+  html:"<h4>¿Qué es Zoey?</h4><p>Zoey es la <b>orquestadora central</b> del sistema. El usuario le pide algo y ella decide si lo resuelve directamente o lo <b>delega al companion más adecuado</b>.</p><p>Junto a Zoey hay un equipo de <b>companions</b>: asistentes especializados con persona propia y expertise (marketing, desarrollo, finanzas…). Marc tiene «Companion 8337», con rol de marketing.</p>",src:"§1 · Plataforma"},
+ {id:"companions",icon:"❑",label:"Companions y bots",kw:["companion","companions","bots","bot","subagentes","paralelo","equipo","8337"],
+  html:"<h4>Companions y bots</h4><p>Cada companion puede tener hasta <b>10 bots</b>: subagentes enfocados que trabajan <b>en paralelo</b>. El companion reparte el trabajo entre sus bots y junta los resultados.</p>",src:"§1 · Companions"},
+ {id:"kb",icon:"▤",label:"Base de conocimiento",kw:["base de conocimiento","conocimiento","documentos","carpetas","semantica","referencias"],
+  html:"<h4>Base de conocimiento de Zoey</h4><p>Espacio donde Zoey guarda documentos e informes en <b>carpetas</b> enlazadas, con búsqueda <b>semántica</b>. Ahí quedó el proyecto Electron de AlphaVision AI (main.js, package.json).</p>",src:"§2 · Conocimiento"},
+ {id:"memoria",icon:"❖",label:"¿Qué es la memoria?",kw:["memoria","recuerda","preferencias","hechos","conversaciones pasadas","recall"],
+  html:"<h4>Memoria de Zoey</h4><p>Guarda <b>hechos y preferencias duraderas</b> (Marc: desarrollo, marketing, finanzas) y recupera conversaciones pasadas por tema o fecha.</p>",src:"§3 · Memoria"},
+ {id:"integr",icon:"⚡",label:"Integraciones",kw:["integraciones","gmail","calendario","slack","stripe","conectar","correos","eventos"],
+  html:"<h4>Integraciones</h4><p>Zoey puede conectarse a <b>Gmail, calendario, Slack o Stripe</b> y ejecutar acciones reales. Marc <b>no tiene ninguna conectada</b> todavía.</p>",src:"§4 · Integraciones"},
+ {id:"plan",icon:"◈",label:"Plan Explorer y límites",kw:["plan","explorer","limites","limitaciones","builder","architect","precio"],
+  html:"<h4>Plan Explorer</h4><table><tr><th>Incluye</th><th>No incluye</th></tr><tr><td>Zoey + hasta 3 companions</td><td>Automatizaciones (cron/webhook)</td></tr><tr><td>Herramientas básicas</td><td>Skills personalizados</td></tr><tr><td>—</td><td>Integraciones custom (API/MCP)</td></tr></table><p style='margin-top:8px'>Lo avanzado está en <b>Builder</b> y <b>Architect</b>.</p>",src:"§5 · Plan"},
+ {id:"internet",icon:"◍",label:"Internet y contenido externo",kw:["internet","web","paginas","youtube","tiktok","instagram","transcribir","videos"],
+  html:"<h4>Internet y contenido externo</h4><p>Zoey busca en internet en tiempo real, lee páginas y <b>transcribe vídeos</b> (YouTube, TikTok, Instagram). Con herramientas conectadas ejecuta acciones directas.</p>",src:"§6 · Internet"},
+ {id:"macapp",icon:"▣",label:"¿Puede crear una app de Mac?",kw:["app nativa","mac","compilar","codigo","executable","aplicacion","electron","dock","webcatalog"],
+  html:"<h4>¿App nativa de Mac?</h4><p><b>No.</b> Zoey no genera ejecutables (.app) ni compila. Sí puede: preparar el código del proyecto, guiar la terminal (<code>npm install</code>, <code>npm start</code>) y sugerir «Añadir al Dock» o WebCatalog/Unite.</p>",src:"§7 · App de Mac"},
+ {id:"voz",icon:"∿",label:"¿Cómo funciona la voz?",kw:["voz","hablar","audio","transcripcion","microfono","canal"],
+  html:"<h4>Cómo funciona la voz</h4><p>Solo cambia el <b>canal</b>: audio→texto, se procesa igual, y la respuesta vuelve a audio. <b>No hay «personalidad de voz» distinta</b>.</p>",src:"§8 · Voz"},
+ {id:"proceso",icon:"⟐",label:"¿Cómo llega a sus respuestas?",kw:["como llega","respuestas","proceso","precision","inventa","reversible","irreversible","confirma"],
+  html:"<h4>Cómo responde Zoey</h4><ul><li>Decide si lo resuelve con una herramienta o lo delega.</li><li><b>No inventa</b>: usa una herramienta real antes de responder.</li><li>Acciones irreversibles (borrar, enviar) <b>se confirman</b>.</li></ul>",src:"§9 · Proceso"},
 ];
-const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
-function retrieve(q){const nq=norm(q),words=nq.split(/[^a-z0-9]+/).filter(w=>w.length>2);let best=null,bs=0;
-  for(const e of KB){let s=0;for(const k of e.kw){const nk=norm(k);if(nq.includes(nk))s+=nk.includes(" ")?4:2;for(const w of words)if(nk.includes(w)||w.includes(nk))s+=1}if(s>bs){bs=s;best=e}}
+function retrieveSeed(q){const nq=norm(q),ws=nq.split(/[^a-z0-9]+/).filter(w=>w.length>2);let best=null,bs=0;
+  for(const e of SEED){let s=0;for(const k of e.kw){const nk=norm(k);if(nq.includes(nk))s+=nk.includes(" ")?4:2;for(const w of ws)if(nk.includes(w)||w.includes(nk))s+=1}if(s>bs){bs=s;best=e}}
   return bs>=2?best:null}
 
-/* ---------- chat ---------- */
-const log=$("#log");
-let history=store.get("yarvis.log",[]);
-function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),1800)}
-function plain(html){const d=document.createElement("div");d.innerHTML=html;return d.textContent.replace(/\s+/g," ").trim()}
+/* ---- learned brain (grows over time) ---- */
+let brain=store.get("yarvis.brain",[]);
+function saveBrain(){store.set("yarvis.brain",brain.slice(-2000));renderBrainStats()}
+function addLearned(q,text,source,weight){const e={id:uid(),q:q||"",text:String(text).trim(),source:source||"aprendido",kind:"learn",weight:weight||0,ts:Date.now()};brain.push(e);saveBrain();return e.id}
+function tok(s){return norm(s).split(/[^a-z0-9]+/).filter(w=>w.length>2)}
+function retrieveBrain(q){
+  if(!brain.length)return null;
+  const qt=[...new Set(tok(q))];if(!qt.length)return null;
+  const N=brain.length,df={};
+  brain.forEach(e=>{const set=new Set(tok(e.q+" "+e.text));qt.forEach(t=>{if(set.has(t))df[t]=(df[t]||0)+1});});
+  let best=null,bs=0,bm=0;
+  brain.forEach(e=>{const words=tok(e.q+" "+e.text),tf={};words.forEach(w=>tf[w]=(tf[w]||0)+1);
+    let s=0,matched=0;
+    qt.forEach(t=>{if(tf[t]){matched++;const idf=Math.log(1+N/((df[t]||0)+1));s+=(idf+.6)*(1+Math.log(tf[t]))}});
+    const hay=norm(e.q+" "+e.text);if(matched&&hay.includes(norm(q)))s+=3;
+    s+=(e.weight||0)*.6;
+    if(s>bs){bs=s;best=e;bm=matched/qt.length}});
+  return best&&bs>=1.2&&bm>=.4?best:null}
 
-function render(who,html,withActs){
+/* ---- config (cloud) ---- */
+let cfg=store.get("yarvis.cfg",{on:false,key:"",model:"claude-haiku-4-5-20251001",max:400});
+function saveCfg(){store.set("yarvis.cfg",cfg)}
+function buildContext(q){
+  const parts=[];
+  if(memoria.length)parts.push("Memoria de Marc:\n"+memoria.slice(0,6).map(m=>"- "+m).join("\n"));
+  const rel=[];const seen=new Set();
+  [retrieveBrain(q)].forEach(e=>{if(e&&!seen.has(e.id)){seen.add(e.id);rel.push(e.text.slice(0,300))}});
+  if(rel.length)parts.push("Notas relevantes:\n"+rel.join("\n---\n"));
+  return parts.join("\n\n");
+}
+const SYS="Eres YARVIS, el asistente personal e independiente de Marc. Responde en español, claro y conciso (máximo unas pocas frases salvo que pidan más). Usa la memoria y notas si son relevantes. Si no estás seguro, dilo con honestidad.";
+async function askCloud(q){
+  if(!cfg.on)return null;
+  if(!cfg.key)return{error:"Activa el cerebro extendido y pega tu API key en ⚙ CEREBRO."};
+  const ctx=buildContext(q);
+  const body={model:cfg.model,max_tokens:Math.max(64,Math.min(2000,cfg.max|0||400)),system:SYS,
+    messages:[{role:"user",content:(ctx?ctx+"\n\n":"")+"Pregunta de Marc: "+q}]};
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",
+      headers:{"x-api-key":cfg.key,"anthropic-version":"2023-06-01","content-type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify(body)});
+    if(!r.ok){let t="";try{t=await r.text()}catch(e){}return{error:"Error "+r.status+(t?" · "+t.slice(0,140):"")}}
+    const d=await r.json();const txt=(d.content&&d.content[0]&&d.content[0].text)?d.content[0].text:"(sin respuesta)";
+    return{text:txt,usage:d.usage||null};
+  }catch(e){return{error:"Sin conexión con el modelo. El cerebro extendido solo funciona al abrir YARVIS como archivo local (la vista previa bloquea la red)."}}
+}
+
+/* ---- chat rendering ---- */
+const log=$("#log");
+let history=store.get("yarvis.hist",[]);
+let lastUserQ="",pendingCorrection=null;
+function render(who,html,withActs,entryId){
   const m=document.createElement("div");m.className="msg "+who;
-  const acts=(who==="ai"&&withActs)?`<div class="acts"><button class="act" data-a="copy">⎘ copiar</button><button class="act" data-a="mem">📌 memoria</button></div>`:"";
-  m.innerHTML=`<div class="who">${who==="ai"?"Y":"M"}</div><div class="col"><div class="bubble">${html}${acts}</div></div>`;
+  let acts="";
+  if(who==="ai"&&withActs){
+    acts='<div class="acts">'+
+      '<button class="act" data-a="copy">⎘ copiar</button>'+
+      '<button class="act" data-a="mem">📌 memoria</button>'+
+      '<button class="act" data-a="up">👍</button>'+
+      '<button class="act" data-a="down">👎 corregir</button></div>';
+  }
+  m.innerHTML='<div class="who">'+(who==="ai"?"Y":"M")+'</div><div class="col"><div class="bubble">'+html+acts+'</div></div>';
   const bub=m.querySelector(".bubble");
   m.querySelectorAll(".act").forEach(b=>b.addEventListener("click",()=>{
-    const txt=plain(html);
-    if(b.dataset.a==="copy"){navigator.clipboard?.writeText(txt);toast("Copiado")}
-    else{addMem(txt.slice(0,180));toast("Guardado en memoria")}
+    const a=b.dataset.a,txt=plain(html);
+    if(a==="copy"){if(navigator.clipboard)navigator.clipboard.writeText(txt);toast("Copiado")}
+    else if(a==="mem"){addMem(txt.slice(0,200));toast("Guardado en memoria")}
+    else if(a==="up"){if(entryId){const e=brain.find(x=>x.id===entryId);if(e){e.weight=(e.weight||0)+1;saveBrain()}}toast("Gracias, lo priorizaré")}
+    else if(a==="down"){pendingCorrection=lastUserQ||"";$("#input").focus();$("#input").placeholder="Escribe la respuesta correcta…";toast("Escribe la respuesta correcta y la aprendo")}
   }));
   log.appendChild(m);log.scrollTop=log.scrollHeight;return bub;
 }
-function persist(){store.set("yarvis.log",history.slice(-40))}
-function pushHist(who,html){history.push({who,html});persist()}
-
-function speak(text){
-  if(!voiceOn||!("speechSynthesis"in window))return;
-  const u=new SpeechSynthesisUtterance(text);u.lang="es-ES";u.rate=1.03;u.pitch=.9;
-  const v=speechSynthesis.getVoices().find(v=>/es/i.test(v.lang));if(v)u.voice=v;
-  speechSynthesis.cancel();speechSynthesis.speak(u)}
-
-function aiRespond(entry){
+function pushHist(who,html,id){history.push({who,html,id:id||null});store.set("yarvis.hist",history.slice(-60))}
+function speak(text){if(!voiceOn||!("speechSynthesis"in window))return;const u=new SpeechSynthesisUtterance(text);u.lang="es-ES";u.rate=1.03;u.pitch=.9;const v=speechSynthesis.getVoices().find(v=>/es/i.test(v.lang));if(v)u.voice=v;speechSynthesis.cancel();speechSynthesis.speak(u)}
+function emit(html,src,id){
   setState(true);
-  const finalHTML=entry.html+(entry.src?`<div class="src">FUENTE · ${entry.src}</div>`:"");
-  const bub=render("ai","",false);bub.classList.add("cursor");
-  const msg=bub.closest(".msg");
-  let step=0;const steps=6;
-  const iv=setInterval(()=>{if(++step>=steps){clearInterval(iv);
-    msg.remove();
-    render("ai",finalHTML,true);pushHist("ai",finalHTML);
-    log.scrollTop=log.scrollHeight;setTimeout(()=>setState(false),600);speak(plain(entry.html));
-  }},reduce?40:150)}
+  const finalHTML=html+(src?'<div class="src">FUENTE · '+src+'</div>':"");
+  const bub=render("ai","",false);bub.classList.add("cursor");const msg=bub.closest(".msg");
+  let step=0;const iv=setInterval(()=>{if(++step>=6){clearInterval(iv);msg.remove();
+    render("ai",finalHTML,true,id);pushHist("ai",finalHTML,id);log.scrollTop=log.scrollHeight;setTimeout(()=>setState(false),600);speak(plain(html));}},reduce?40:150);
+}
 
-/* ---------- command handling ---------- */
-const fallback={html:`<h4>No lo tengo en el informe</h4><p>Solo respondo con lo documentado sobre <b>Zoey OS</b>. Abre <b>⌘K</b> para ver todos los temas, o prueba: qué es Zoey, companions, memoria, integraciones, plan Explorer, internet/voz, app de Mac.</p>`,src:"YARVIS"};
-function handle(q){
-  const raw=q.trim();if(!raw)return;
-  render("me",raw.replace(/</g,"&lt;"),false);pushHist("me",raw.replace(/</g,"&lt;"));
+/* ---- main handler ---- */
+async function handle(q){
+  const raw=String(q).trim();if(!raw)return;
+  render("me",esc(raw),false);pushHist("me",esc(raw));
   const nq=norm(raw);
-  if(raw.startsWith("/")){return command(raw.slice(1))}
-  const mm=nq.match(/^recuerda(?:\s+que)?\s+(.+)/);
-  if(mm){addMem(raw.replace(/^[^ ]+\s+(que\s+)?/i,""));return aiRespond({html:`<p>Anotado en <b>mi memoria</b>. Lo recordaré entre sesiones, aquí en tu equipo.</p>`,src:"YARVIS"})}
-  if(/(que|cuanto).*(cuesta|pagar|precio|gratis)|es gratis|de quien eres|eres mio|independiente|dependes de zoey/.test(nq))
-    return aiRespond({html:`<h4>Soy tuyo y gratis</h4><p>YARVIS es una aplicación <b>independiente</b>: soy un único archivo que corre entero en tu navegador. No hay servidor, ni cuenta, ni API, ni suscripción — <b>coste 0€, para siempre</b>.</p><p>Tengo <b>mi propia memoria</b> (guardada en tu equipo) y genero <b>mis propias respuestas</b> desde el conocimiento de Zoey OS que llevo dentro. <b>No dependo de Zoey</b> ni le envío nada: aunque Zoey se apague, yo sigo funcionando.</p>`,src:"YARVIS · Edición de Marc"});
-  if(/(que|cual).*(sabes|recuerdas).*(de mi|sobre mi)|que sabes de mi|mi memoria|que recuerdas/.test(nq)){
-    const list=memoria.length?`<ul>${memoria.map(m=>`<li>${m.replace(/</g,"&lt;")}</li>`).join("")}</ul>`:`<p>Todavía no tengo notas sobre ti. Dime «recuerda que…» y lo guardo.</p>`;
-    return aiRespond({html:`<h4>Lo que recuerdo de ti</h4>${list}<p style="margin-top:8px">Puedes editarlo en <b>MEMORIA</b> o con <code>/recuerda</code>.</p>`,src:"Memoria de YARVIS"});
-  }
-  if(/(quien|que) eres|preséntate|presentate/.test(nq))
-    return aiRespond({html:`<h4>Quién soy</h4><p>Soy <b>YARVIS</b>, tu núcleo personal e independiente, Marc. Corro en local, gratis, con memoria propia, y me sé todo el informe de <b>Zoey OS</b>. Pregúntame por cualquier tema o pulsa <b>⌘K</b>.</p>`,src:"YARVIS"});
+  if(pendingCorrection!==null&&!raw.startsWith("/")){const qq=pendingCorrection;pendingCorrection=null;$("#input").placeholder="Pregúntame o enséñame…  (/ayuda)";addLearned(qq,raw,"corrección de Marc",2);return emit("<p>Corregido y aprendido ✓ La próxima vez responderé eso.</p>","Aprendizaje",null)}
+  lastUserQ=raw;
+  if(raw.startsWith("/"))return command(raw.slice(1));
+  const mm=raw.match(/^recuerda(?:\s+que)?\s+(.+)/i);
+  if(mm){addMem(mm[1]);return emit("<p>Anotado en <b>mi memoria</b>. Lo recordaré entre sesiones.</p>","Memoria",null)}
+  const ap=raw.match(/^aprende(?:\s+que)?\s*[:,-]?\s*([\s\S]+)/i);
+  if(ap){const body=ap[1].trim();const parts=body.split(/\s*(?:::|=>|->)\s*/);
+    if(parts.length>=2){addLearned(parts[0],parts.slice(1).join(" "),"enseñado por Marc",1)}
+    else{addLearned("",body,"enseñado por Marc",1)}
+    return emit("<p>Aprendido ✓ Lo tendré en cuenta a partir de ahora.</p>","Aprendizaje",null)}
+  if(/(que|cuanto).*(cuesta|pagar|precio|gratis)|es gratis|de quien eres|eres mio|dependes de zoey/.test(nq))
+    return emit("<h4>Soy tuyo y gratis</h4><p>Soy una app <b>independiente</b>: un único archivo en tu navegador. Sin servidor, sin cuenta, <b>0€</b>. Tengo mi propia memoria y aprendo de lo que me enseñas. El <b>cerebro extendido</b> (Haiku) es opcional y gasta muy pocos tokens, solo cuando no sé algo — y luego lo guardo para que sea gratis.</p>","YARVIS",null);
+  if(/(que|cual).*(sabes|recuerdas).*(de mi|sobre mi)|que sabes de mi|que recuerdas/.test(nq)){
+    const list=memoria.length?"<ul>"+memoria.map(m=>"<li>"+esc(m)+"</li>").join("")+"</ul>":"<p>Aún no tengo notas sobre ti. Dime «recuerda que…».</p>";
+    return emit("<h4>Lo que recuerdo de ti</h4>"+list,"Memoria",null)}
+  if(/(quien|que) eres|presentate/.test(nq))
+    return emit("<h4>Quién soy</h4><p>Soy <b>YARVIS</b>, tu núcleo personal e independiente. Corro en local, gratis, aprendo con el tiempo y me sé el informe de <b>Zoey OS</b>.</p>","YARVIS",null);
   if(/^(hola|hey|buenas|hi|que tal|como estas)\b/.test(nq))
-    return aiRespond({html:`<p>Buenas, Marc. Soy <b>YARVIS</b>, tu asistente independiente y gratis. Me sé el informe de Zoey OS y recuerdo lo tuyo en local. Pulsa <b>⌘K</b>, dicta con 🎙 o pregúntame.</p>`,src:"YARVIS"});
-  if(/(gracias|thanks|genial|perfecto)\b/.test(nq))
-    return aiRespond({html:`<p>A tus órdenes. Sigo en línea.</p>`,src:"YARVIS"});
-  aiRespond(retrieve(raw)||fallback);
+    return emit("<p>Buenas, Marc. Soy <b>YARVIS</b>. Pregúntame, enséñame algo con <code>aprende:</code> o abre <b>CEREBRO</b> para importar tus documentos.</p>","YARVIS",null);
+  const seed=retrieveSeed(raw);if(seed)return emit(seed.html,seed.src,null);
+  const b=retrieveBrain(raw);if(b)return emit(fmt(b.text),(b.source||"aprendido")+" · local · 0 tokens",b.id);
+  // miss -> cloud or invite to teach
+  if(cfg.on){
+    setState(true);
+    const tb=render("ai",'<span class="cursor">consultando cerebro extendido…</span>',false);const tmsg=tb.closest(".msg");
+    const res=await askCloud(raw);tmsg.remove();
+    if(res&&res.text){const id=addLearned(raw,res.text,"cerebro extendido",0);
+      const note=res.usage?" · "+((res.usage.input_tokens||0)+(res.usage.output_tokens||0))+" tokens · guardado":" · guardado";
+      return emit(fmt(res.text),"cerebro extendido"+note,id)}
+    setState(false);
+    const err=res&&res.error?"<p class='src'>"+esc(res.error)+"</p>":"";
+    return emit("<h4>Aún no lo sé</h4><p>No lo tengo en local y el cerebro extendido no respondió.</p>"+err+"<p>Enséñamelo con <code>aprende: …</code> y lo recordaré gratis.</p>","YARVIS",null);
+  }
+  return emit("<h4>Aún no lo sé</h4><p>Eso no está en lo que he aprendido todavía. Enséñamelo con <code>aprende: pregunta :: respuesta</code>, importa un documento en <b>CEREBRO</b>, o activa el <b>cerebro extendido</b> (pocos tokens) para que lo resuelva y lo guarde.</p>","YARVIS",null);
 }
 function command(c){
-  const [cmd,...rest]=c.trim().split(/\s+/);const arg=rest.join(" ");
-  switch(norm(cmd)){
-    case"ayuda":case"help":return aiRespond({html:`<h4>Comandos</h4><ul><li><code>/memoria</code> — abrir la memoria</li><li><code>/recuerda &lt;texto&gt;</code> — guardar una nota</li><li><code>/exportar</code> — descargar la conversación</li><li><code>/limpiar</code> — borrar la conversación</li><li><code>/voz</code> — activar/desactivar lectura</li></ul><p>Atajo: <b>⌘K</b> abre la paleta de temas y comandos.</p>`,src:"YARVIS"});
-    case"memoria":openDrawer(true);return aiRespond({html:`<p>Abriendo <b>memoria</b>.</p>`,src:"YARVIS"});
-    case"recuerda":case"recordar":if(arg){addMem(arg);return aiRespond({html:`<p>Anotado en memoria.</p>`,src:"YARVIS"})}return aiRespond({html:`<p>Uso: <code>/recuerda &lt;texto&gt;</code></p>`,src:"YARVIS"});
-    case"exportar":case"export":exportMd();return aiRespond({html:`<p>Conversación exportada como Markdown.</p>`,src:"YARVIS"});
-    case"limpiar":case"clear":history=[];persist();log.innerHTML="";return aiRespond({html:`<p>Conversación borrada.</p>`,src:"YARVIS"});
-    case"voz":setVoice(!voiceOn);return aiRespond({html:`<p>Lectura en voz <b>${voiceOn?"activada":"desactivada"}</b>.</p>`,src:"YARVIS"});
-    default:return aiRespond({html:`<p>Comando desconocido. Prueba <code>/ayuda</code>.</p>`,src:"YARVIS"});
+  const parts=c.trim().split(/\s+/),cmd=norm(parts[0]||""),arg=parts.slice(1).join(" ");
+  switch(cmd){
+    case"ayuda":case"help":return emit("<h4>Comandos</h4><ul><li><code>aprende: pregunta :: respuesta</code> — enseñarme</li><li><code>/recuerda &lt;texto&gt;</code> — nota en memoria</li><li><code>/cerebro</code> — importar / ajustes / stats</li><li><code>/memoria</code> — abrir memoria</li><li><code>/exportar</code> · <code>/limpiar</code> · <code>/voz</code></li></ul><p>👍/👎 en mis respuestas me corrige. Atajo <b>⌘K</b>.</p>","YARVIS",null);
+    case"cerebro":openDrawer("brainDrawer");return emit("<p>Abriendo <b>CEREBRO</b>.</p>","YARVIS",null);
+    case"memoria":openDrawer("memDrawer");return emit("<p>Abriendo <b>memoria</b>.</p>","YARVIS",null);
+    case"recuerda":case"recordar":if(arg){addMem(arg);return emit("<p>Anotado en memoria.</p>","YARVIS",null)}return emit("<p>Uso: <code>/recuerda &lt;texto&gt;</code></p>","YARVIS",null);
+    case"aprende":case"aprender":if(arg){const p=arg.split(/\s*(?:::|=>|->)\s*/);if(p.length>=2)addLearned(p[0],p.slice(1).join(" "),"enseñado por Marc",1);else addLearned("",arg,"enseñado por Marc",1);return emit("<p>Aprendido ✓</p>","Aprendizaje",null)}return emit("<p>Uso: <code>/aprende pregunta :: respuesta</code></p>","YARVIS",null);
+    case"exportar":case"export":exportMd();return emit("<p>Conversación exportada.</p>","YARVIS",null);
+    case"limpiar":case"clear":history=[];store.set("yarvis.hist",history);log.innerHTML="";return emit("<p>Conversación borrada.</p>","YARVIS",null);
+    case"voz":setVoice(!voiceOn);return emit("<p>Lectura en voz <b>"+(voiceOn?"activada":"desactivada")+"</b>.</p>","YARVIS",null);
+    default:return emit("<p>Comando desconocido. Prueba <code>/ayuda</code>.</p>","YARVIS",null);
   }
 }
 
-/* ---------- memoria ---------- */
+/* ---- memoria ---- */
 let memoria=store.get("yarvis.memoria",null);
-if(memoria===null){memoria=[
-  "Marc está en el plan Explorer (Zoey + hasta 3 companions).",
-  "Le interesan desarrollo, marketing y finanzas.",
-  "Tiene 1 companion: «Companion 8337» (rol de marketing).",
-  "Aún no tiene integraciones conectadas.",
-];store.set("yarvis.memoria",memoria)}
-function renderMem(){const l=$("#memList");l.innerHTML="";
-  if(!memoria.length){l.innerHTML=`<div class="d-note">Sin notas todavía.</div>`;return}
-  memoria.forEach((t,i)=>{const d=document.createElement("div");d.className="mem";
-    d.innerHTML=`<span class="dot">▸</span><span class="txt"></span><button class="del" aria-label="borrar">×</button>`;
-    d.querySelector(".txt").textContent=t;
-    d.querySelector(".del").onclick=()=>{memoria.splice(i,1);store.set("yarvis.memoria",memoria);renderMem()};
-    l.appendChild(d)})}
-function addMem(t){t=t.trim();if(!t)return;memoria.unshift(t);store.set("yarvis.memoria",memoria);renderMem()}
+if(memoria===null){memoria=["Marc está en el plan Explorer de Zoey (hasta 3 companions).","Le interesan desarrollo, marketing y finanzas.","Tiene 1 companion: «Companion 8337» (marketing).","Aún no tiene integraciones conectadas."];store.set("yarvis.memoria",memoria)}
+function renderMem(){const l=$("#memList");l.innerHTML="";if(!memoria.length){l.innerHTML='<div class="d-note">Sin notas todavía.</div>';return}
+  memoria.forEach((t,i)=>{const d=document.createElement("div");d.className="mem";d.innerHTML='<span class="dot">▸</span><span class="txt"></span><button class="del" aria-label="borrar">×</button>';d.querySelector(".txt").textContent=t;d.querySelector(".del").onclick=()=>{memoria.splice(i,1);store.set("yarvis.memoria",memoria);renderMem()};l.appendChild(d)})}
+function addMem(t){t=String(t).trim();if(!t)return;memoria.unshift(t);store.set("yarvis.memoria",memoria);renderMem()}
 $("#memForm").addEventListener("submit",e=>{e.preventDefault();addMem($("#memInput").value);$("#memInput").value="";toast("Añadido a memoria")});
-function openDrawer(o){$("#drawer").classList.toggle("open",o);$("#memBtn").classList.toggle("on",o)}
-$("#memBtn").onclick=()=>openDrawer(!$("#drawer").classList.contains("open"));
-$("#drawerX").onclick=()=>openDrawer(false);
-renderMem();
 
-/* ---------- export ---------- */
-function exportMd(){
-  let md=`# Conversación con YARVIS — Zoey OS\n_${new Date().toLocaleString("es-ES")}_\n\n`;
-  history.forEach(h=>{md+=`**${h.who==="ai"?"YARVIS":"Marc"}:** ${plain(h.html)}\n\n`});
-  if(memoria.length){md+=`## Memoria\n`+memoria.map(m=>`- ${m}`).join("\n")+"\n"}
-  const blob=new Blob([md],{type:"text/markdown"});const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);a.download="yarvis-zoey-os.md";a.click();URL.revokeObjectURL(a.href);toast("Exportado")}
+/* ---- drawers ---- */
+function openDrawer(id){document.querySelectorAll(".drawer").forEach(d=>d.classList.toggle("open",d.id===id&&!d.classList.contains("open")?true:(d.id===id?false:false)));
+  const d=$("#"+id),willOpen=!d.classList.contains("open");
+  document.querySelectorAll(".drawer").forEach(x=>x.classList.remove("open"));
+  if(willOpen)d.classList.add("open");
+  $("#brainBtn").classList.toggle("on",$("#brainDrawer").classList.contains("open"));
+  $("#memBtn").classList.toggle("on",$("#memDrawer").classList.contains("open"));
+}
+$("#memBtn").onclick=()=>openDrawer("memDrawer");
+$("#brainBtn").onclick=()=>openDrawer("brainDrawer");
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>{$("#"+b.dataset.close).classList.remove("open");$("#brainBtn").classList.remove("on");$("#memBtn").classList.remove("on")});
+
+/* ---- brain drawer wiring ---- */
+function renderBrainStats(){
+  const docs=new Set(brain.filter(e=>e.source&&e.source.indexOf("📄")===0).map(e=>e.source));
+  const cloud=brain.filter(e=>e.kind==="learn"&&e.source==="cerebro extendido").length;
+  $("#brainStats").innerHTML=
+    '<div class="stat"><b>'+brain.length+'</b><span>CONOCIMIENTOS</span></div>'+
+    '<div class="stat"><b>'+docs.size+'</b><span>DOCUMENTOS</span></div>'+
+    '<div class="stat"><b>'+cloud+'</b><span>EN CACHÉ</span></div>';
+}
+$("#teachBtn").onclick=()=>{const q=$("#teachQ").value.trim(),a=$("#teachA").value.trim();if(!a){toast("Escribe qué aprender");return}addLearned(q,a,"enseñado por Marc",1);$("#teachQ").value="";$("#teachA").value="";toast("Aprendido ✓")};
+function importDoc(name,text){let chunks=String(text).split(/\n{2,}/).map(s=>s.trim()).filter(s=>s.length>40).slice(0,300);
+  if(!chunks.length&&text.trim().length>0)chunks=[text.trim().slice(0,1200)];
+  let n=0;chunks.forEach(c=>{addLearned("",c,"📄 "+name,0);n++});return n}
+$("#importFileBtn").onclick=()=>$("#fileInput").click();
+$("#fileInput").onchange=e=>{const files=[...e.target.files];let total=0,pending=files.length;if(!pending)return;
+  files.forEach(f=>{const rd=new FileReader();rd.onload=()=>{try{
+    if(/\.json$/i.test(f.name)){const data=JSON.parse(rd.result);total+=mergeBrain(data)}
+    else{total+=importDoc(f.name,rd.result)}
+  }catch(err){toast("No pude leer "+f.name)}finally{if(--pending===0){toast("Aprendidos "+total+" fragmentos");e.target.value=""}}};rd.onerror=()=>{if(--pending===0)e.target.value=""};rd.readAsText(f)})};
+$("#pasteBtn").onclick=()=>{const t=$("#pasteBox").value.trim();if(!t){toast("Pega algo primero");return}const n=importDoc("nota pegada",t);$("#pasteBox").value="";toast("Aprendidos "+n+" fragmentos")};
+
+/* cloud settings */
+function loadCfgUI(){$("#cloudOn").checked=!!cfg.on;$("#cloudKey").value=cfg.key||"";$("#cloudModel").value=cfg.model;$("#cloudMax").value=cfg.max}
+$("#cloudOn").onchange=e=>{cfg.on=e.target.checked;saveCfg();$("#statePill")&&0;toast(cfg.on?"Cerebro extendido activado":"Cerebro extendido desactivado")};
+$("#cloudKey").onchange=e=>{cfg.key=e.target.value.trim();saveCfg()};
+$("#cloudModel").onchange=e=>{cfg.model=e.target.value;saveCfg()};
+$("#cloudMax").onchange=e=>{cfg.max=Math.max(64,Math.min(2000,parseInt(e.target.value)||400));e.target.value=cfg.max;saveCfg()};
+
+/* backup */
+function mergeBrain(data){let n=0;
+  if(data&&Array.isArray(data.brain)){data.brain.forEach(e=>{if(e&&e.text){brain.push({id:uid(),q:e.q||"",text:String(e.text),source:e.source||"importado",kind:e.kind||"learn",weight:e.weight||0,ts:e.ts||Date.now()});n++}})}
+  else if(Array.isArray(data)){data.forEach(e=>{if(e&&e.text){brain.push({id:uid(),q:e.q||"",text:String(e.text),source:e.source||"importado",kind:"learn",weight:0,ts:Date.now()});n++}})}
+  if(data&&Array.isArray(data.memoria)){data.memoria.forEach(m=>{if(m&&memoria.indexOf(m)<0)memoria.unshift(m)});store.set("yarvis.memoria",memoria);renderMem()}
+  saveBrain();return n}
+$("#brainExport").onclick=()=>{const blob=new Blob([JSON.stringify({brain,memoria,exported:new Date().toISOString()},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="yarvis-cerebro.json";a.click();URL.revokeObjectURL(a.href);toast("Cerebro exportado")};
+$("#brainImportBtn").onclick=()=>$("#brainImportInput").click();
+$("#brainImportInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const n=mergeBrain(JSON.parse(rd.result));toast("Importados "+n+" conocimientos")}catch(err){toast("JSON no válido")}e.target.value=""};rd.readAsText(f)};
+$("#brainWipe").onclick=()=>{if(confirm("¿Borrar todo lo aprendido? (la memoria de hechos se mantiene)")){brain=[];saveBrain();toast("Cerebro aprendido borrado")}};
+
+/* ---- export conversation ---- */
+function exportMd(){let md="# Conversación con YARVIS\n_"+new Date().toLocaleString("es-ES")+"_\n\n";
+  history.forEach(h=>{md+="**"+(h.who==="ai"?"YARVIS":"Marc")+":** "+plain(h.html)+"\n\n"});
+  if(memoria.length)md+="## Memoria\n"+memoria.map(m=>"- "+m).join("\n")+"\n";
+  const blob=new Blob([md],{type:"text/markdown"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="yarvis-conversacion.md";a.click();URL.revokeObjectURL(a.href);toast("Exportado")}
 $("#exportBtn").onclick=exportMd;
 
-/* ---------- voice output toggle ---------- */
+/* ---- voice ---- */
 let voiceOn=store.get("yarvis.voice",false);
 function setVoice(v){voiceOn=v;store.set("yarvis.voice",v);$("#voiceBtn").classList.toggle("on",v);if(!v&&"speechSynthesis"in window)speechSynthesis.cancel()}
-$("#voiceBtn").onclick=()=>setVoice(!voiceOn);setVoice(voiceOn);
+$("#voiceBtn").onclick=()=>setVoice(!voiceOn);
 if("speechSynthesis"in window)speechSynthesis.getVoices();
-
-/* ---------- voice input (dictado) ---------- */
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const mic=$("#mic");let rec=null,listening=false;
-if(SR){
-  rec=new SR();rec.lang="es-ES";rec.interimResults=true;rec.continuous=false;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;const mic=$("#mic");let rec=null,listening=false;
+if(SR){rec=new SR();rec.lang="es-ES";rec.interimResults=true;rec.continuous=false;
   rec.onresult=e=>{let txt="";for(let i=e.resultIndex;i<e.results.length;i++)txt+=e.results[i][0].transcript;$("#input").value=txt};
   rec.onend=()=>{listening=false;mic.classList.remove("live");const v=$("#input").value.trim();if(v){$("#input").value="";handle(v)}};
   rec.onerror=()=>{listening=false;mic.classList.remove("live");toast("No pude escuchar")};
   mic.onclick=()=>{if(listening){rec.stop();return}try{listening=true;mic.classList.add("live");$("#input").value="";$("#input").placeholder="Escuchando…";rec.start()}catch(e){listening=false;mic.classList.remove("live")}};
-}else{mic.style.display="none";$("#micHint").textContent="⤓ exportar · 📌 guardar en memoria · ⌘K comandos"}
+}else{mic.style.display="none"}
 
-/* ---------- composer + chips ---------- */
-$("#form").addEventListener("submit",e=>{e.preventDefault();const v=$("#input").value.trim();if(!v)return;$("#input").value="";$("#input").placeholder="Pregunta a YARVIS…  (prueba /ayuda)";handle(v)});
-const chipsEl=$("#chips");
-["¿Qué es Zoey?","Companions y bots","Mi plan Explorer","¿App de Mac?","Memoria","Integraciones"].forEach(c=>{
-  const b=document.createElement("button");b.className="chip";b.type="button";b.textContent=c;b.onclick=()=>handle(c);chipsEl.appendChild(b)});
+/* ---- composer + chips ---- */
+$("#form").addEventListener("submit",e=>{e.preventDefault();const v=$("#input").value.trim();if(!v)return;$("#input").value="";if(pendingCorrection===null)$("#input").placeholder="Pregúntame o enséñame…  (/ayuda)";handle(v)});
+["¿Qué es Zoey?","Companions y bots","Mi plan Explorer","¿App de Mac?","¿Eres gratis?","aprende: mi color favorito :: naranja"].forEach(c=>{const b=document.createElement("button");b.className="chip";b.type="button";b.textContent=c;b.onclick=()=>handle(c);$("#chips").appendChild(b)});
 
-/* ---------- command palette ---------- */
+/* ---- command palette ---- */
 const pal=$("#pal"),palInput=$("#palInput"),palList=$("#palList");
 const ACTIONS=[
-  {icon:"❖",label:"Abrir memoria",sub:"MEMORIA",run:()=>openDrawer(true)},
+  {icon:"◎",label:"Enseñar / importar (CEREBRO)",sub:"APRENDER",run:()=>openDrawer("brainDrawer")},
+  {icon:"❖",label:"Abrir memoria",sub:"MEMORIA",run:()=>openDrawer("memDrawer")},
   {icon:"⤓",label:"Exportar conversación",sub:"MARKDOWN",run:exportMd},
   {icon:"🗑",label:"Limpiar conversación",sub:"BORRAR",run:()=>command("limpiar")},
   {icon:"∿",label:"Activar / desactivar voz",sub:"LECTURA",run:()=>setVoice(!voiceOn)},
@@ -442,42 +591,33 @@ const ACTIONS=[
 let palItems=[],palSel=0;
 function openPal(){pal.classList.add("open");palInput.value="";buildPal("");palInput.focus()}
 function closePal(){pal.classList.remove("open")}
-function buildPal(q){
-  const nq=norm(q);
-  const topics=KB.filter(e=>!nq||norm(e.label+" "+e.kw.join(" ")).includes(nq)).map(e=>({icon:e.icon,label:e.label,sub:e.src,run:()=>{handle(e.label)}}));
+function buildPal(q){const nq=norm(q);
+  const topics=SEED.filter(e=>!nq||norm(e.label+" "+e.kw.join(" ")).includes(nq)).map(e=>({icon:e.icon,label:e.label,sub:e.src,run:()=>handle(e.label)}));
   const acts=ACTIONS.filter(a=>!nq||norm(a.label).includes(nq));
-  palItems=[...topics,...acts];palSel=0;
-  palList.innerHTML="";
-  if(!palItems.length){palList.innerHTML=`<div class="pal-empty">Sin resultados</div>`;return}
+  palItems=topics.concat(acts);palSel=0;palList.innerHTML="";
+  if(!palItems.length){palList.innerHTML='<div class="pal-empty">Sin resultados</div>';return}
   palItems.forEach((it,i)=>{const d=document.createElement("div");d.className="pal-item"+(i===0?" sel":"");
-    d.innerHTML=`<span class="ic">${it.icon}</span><span class="lb">${it.label}<small>${it.sub}</small></span>`;
+    d.innerHTML='<span class="ic">'+it.icon+'</span><span class="lb">'+esc(it.label)+'<small>'+esc(it.sub)+'</small></span>';
     d.onmousemove=()=>{palSel=i;markPal()};d.onclick=()=>{closePal();it.run()};palList.appendChild(d)})}
-function markPal(){[...palList.children].forEach((c,i)=>c.classList.toggle("sel",i===palSel));const el=palList.children[palSel];el&&el.scrollIntoView({block:"nearest"})}
+function markPal(){[...palList.children].forEach((c,i)=>c.classList.toggle("sel",i===palSel));const el=palList.children[palSel];if(el)el.scrollIntoView({block:"nearest"})}
 palInput.addEventListener("input",()=>buildPal(palInput.value));
-palInput.addEventListener("keydown",e=>{
-  if(e.key==="ArrowDown"){e.preventDefault();palSel=Math.min(palSel+1,palItems.length-1);markPal()}
-  else if(e.key==="ArrowUp"){e.preventDefault();palSel=Math.max(palSel-1,0);markPal()}
-  else if(e.key==="Enter"){e.preventDefault();const it=palItems[palSel];if(it){closePal();it.run()}}
-  else if(e.key==="Escape"){closePal()}});
+palInput.addEventListener("keydown",e=>{if(e.key==="ArrowDown"){e.preventDefault();palSel=Math.min(palSel+1,palItems.length-1);markPal()}else if(e.key==="ArrowUp"){e.preventDefault();palSel=Math.max(palSel-1,0);markPal()}else if(e.key==="Enter"){e.preventDefault();const it=palItems[palSel];if(it){closePal();it.run()}}else if(e.key==="Escape")closePal()});
 pal.addEventListener("click",e=>{if(e.target===pal)closePal()});
 $("#palOpen").onclick=openPal;
-addEventListener("keydown",e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();pal.classList.contains("open")?closePal():openPal()}
-  else if(e.key==="Escape"&&pal.classList.contains("open"))closePal()});
+addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();pal.classList.contains("open")?closePal():openPal()}else if(e.key==="Escape"&&pal.classList.contains("open"))closePal()});
 
-/* ---------- boot / restore ---------- */
+/* ---- init ---- */
+loadCfgUI();renderMem();renderBrainStats();
 const boot=$("#boot");
-const lines=[["> inicializando núcleo YARVIS · edición de Marc ...","b"],["  cargando conocimiento de Zoey OS (copia local)",""],
-  ["  modo independiente · sin conexión a Zoey ...... OK","ok"],["  memoria propia de Marc (local) ................ OK","ok"],
-  ["  cuenta: ninguna · plan: ninguno · coste: 0€","ok"],["> YARVIS ONLINE · 100% TUYO","b"]];
+const lines=[["> inicializando YARVIS · edición de Marc ...","b"],["  cargando conocimiento base (Zoey OS) ......... OK","ok"],
+  ["  cargando cerebro aprendido ("+brain.length+" ítems) ...","ok"],["  memoria propia (local) ....................... OK","ok"],
+  ["  modo: local · gratis · aprende con el tiempo","ok"],["> YARVIS ONLINE · 100% TUYO","b"]];
 let li=0;
-function restore(){history.forEach(h=>render(h.who,h.html,h.who==="ai"));log.scrollTop=log.scrollHeight}
-function bootStep(){
-  if(li>=lines.length){setTimeout(()=>{boot.classList.add("done");
-    if(history.length){restore()}
-    else{const e={html:`<p>Núcleo en línea. Soy <b>YARVIS</b>, tu asistente <b>independiente</b>: corro entero en tu navegador, con mi <b>propia memoria y mis propias respuestas</b>, sin cuenta, sin pagar nada y sin depender de Zoey.</p><p>Me sé todo el informe de <b>Zoey OS</b>. Pulsa <b>⌘K</b>, dicta con 🎙 o pregúntame, Marc.</p>`,src:"YARVIS"};aiRespond(e)}
+function restore(){history.forEach(h=>render(h.who,h.html,h.who==="ai",h.id));log.scrollTop=log.scrollHeight}
+function bootStep(){if(li>=lines.length){setTimeout(()=>{boot.classList.add("done");
+  if(history.length)restore();
+  else emit("<p>Núcleo en línea. Soy <b>YARVIS</b>: local, gratis y <b>aprendo con el tiempo</b>. Pregúntame, enséñame con <code>aprende:</code> o importa tus documentos en <b>CEREBRO</b>. Para conocimiento de todas las áreas, activa el <b>cerebro extendido</b> (pocos tokens) en ⚙.</p>","YARVIS",null);
   },500);return}
-  const[t,cls]=lines[li++];const d=document.createElement("div");if(cls)d.className=cls;d.textContent=t;boot.appendChild(d);
-  setTimeout(bootStep,reduce?90:320)}
+  const L=lines[li++];const d=document.createElement("div");if(L[1])d.className=L[1];d.textContent=L[0];boot.appendChild(d);setTimeout(bootStep,reduce?90:300)}
 bootStep();
 </script>
