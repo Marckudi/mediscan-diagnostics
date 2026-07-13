@@ -83,6 +83,9 @@
   .bubble th,.bubble td{border:1px solid var(--line-strong);padding:6px 8px;text-align:left;vertical-align:top}
   .bubble th{color:var(--accent)}
   .bubble .src{margin-top:9px;font-size:10px;color:var(--muted-2);letter-spacing:1px}
+  .bubble a{color:var(--accent-2);text-decoration:none;border-bottom:1px solid rgba(255,174,92,.35)}
+  .bubble a:hover{color:var(--accent)}
+  .bubble ul.cites{margin-top:4px}.bubble ul.cites li{font-size:11px;overflow-wrap:anywhere}
   .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
   .act{background:transparent;border:1px solid var(--line);color:var(--muted-2);border-radius:6px;padding:3px 8px;
     font-family:var(--mono);font-size:10px;cursor:pointer;transition:.15s}
@@ -178,7 +181,7 @@
     <header class="topbar">
       <div class="title"><h1>YARVIS</h1><span class="tm">™</span><small>EDICIÓN DE MARC · APRENDE CON EL TIEMPO</small></div>
       <div class="status">
-        <span class="pill"><span class="led"></span> LOCAL · GRATIS</span>
+        <span class="pill" id="netPill"><span class="led warn"></span> SOLO LOCAL</span>
         <span class="pill" id="statePill"><span class="led warn"></span> <span id="stateTxt">EN REPOSO</span></span>
         <span class="kbd" id="palOpen">⌘K</span>
         <span id="clock">--:--:--</span>
@@ -250,8 +253,9 @@
 
         <div class="sec">
           <div class="lbl">Cerebro extendido · pocos tokens (opcional)</div>
-          <div class="d-note">Solo se usa cuando NO sé algo en local, y guarda la respuesta para que la próxima vez sea gratis. Requiere abrir YARVIS como archivo local (la vista previa bloquea la red) y tu propia API key de Anthropic.</div>
-          <label class="togg"><input type="checkbox" id="cloudOn"> Activar cerebro extendido</label>
+          <div class="d-note">Con esto YARVIS responde de <b>cualquier tema como Claude</b> y <b>busca en internet</b> en tiempo real. Usa tu propia API key de Anthropic y requiere abrir YARVIS como archivo local (la vista previa bloquea la red). Con Haiku el coste por pregunta es de céntimos.</div>
+          <label class="togg"><input type="checkbox" id="cloudOn"> Activar cerebro extendido (respuestas como Claude)</label>
+          <label class="togg"><input type="checkbox" id="cloudWeb"> Buscar en internet cuando haga falta</label>
           <input id="cloudKey" class="fld" type="password" placeholder="API key de Anthropic (sk-ant-…)" autocomplete="off">
           <div class="row">
             <select id="cloudModel" class="fld" style="flex:1">
@@ -355,8 +359,19 @@ const SEED=[
  {id:"proceso",icon:"⟐",label:"¿Cómo llega a sus respuestas?",kw:["como llega","respuestas","proceso","precision","inventa","reversible","irreversible","confirma"],
   html:"<h4>Cómo responde Zoey</h4><ul><li>Decide si lo resuelve con una herramienta o lo delega.</li><li><b>No inventa</b>: usa una herramienta real antes de responder.</li><li>Acciones irreversibles (borrar, enviar) <b>se confirman</b>.</li></ul>",src:"§9 · Proceso"},
 ];
-function retrieveSeed(q){const nq=norm(q),ws=nq.split(/[^a-z0-9]+/).filter(w=>w.length>2);let best=null,bs=0;
-  for(const e of SEED){let s=0;for(const k of e.kw){const nk=norm(k);if(nq.includes(nk))s+=nk.includes(" ")?4:2;for(const w of ws)if(nk.includes(w)||w.includes(nk))s+=1}if(s>bs){bs=s;best=e}}
+const STOP=new Set(["que","los","las","una","uno","con","por","para","del","como","mas","cual","dime","este","esta","eso","esa","sea","son","muy","todo","toda","tienes","puedes","quiero","hay","son","cosa","mejor","the","and","por"]);
+function retrieveSeed(q){
+  const nq=norm(q);
+  const ws=nq.split(/[^a-z0-9]+/).filter(w=>w.length>=3&&!STOP.has(w));
+  if(!ws.length)return null;
+  let best=null,bs=0;
+  for(const e of SEED){let s=0;
+    for(const k of e.kw){const nk=norm(k);
+      if(nk.length>4&&nq.includes(nk))s+=nk.includes(" ")?5:3;
+      const toks=nk.split(" ");
+      for(const w of ws){if(toks.indexOf(w)>=0)s+=2}
+    }
+    if(s>bs){bs=s;best=e}}
   return bs>=2?best:null}
 
 /* ---- learned brain (grows over time) ---- */
@@ -379,31 +394,37 @@ function retrieveBrain(q){
   return best&&bs>=1.2&&bm>=.4?best:null}
 
 /* ---- config (cloud) ---- */
-let cfg=store.get("yarvis.cfg",{on:false,key:"",model:"claude-haiku-4-5-20251001",max:400});
+let cfg=Object.assign({on:false,key:"",model:"claude-haiku-4-5-20251001",max:1024,web:true},store.get("yarvis.cfg",{}));
 function saveCfg(){store.set("yarvis.cfg",cfg)}
 function buildContext(q){
-  const parts=[];
-  if(memoria.length)parts.push("Memoria de Marc:\n"+memoria.slice(0,6).map(m=>"- "+m).join("\n"));
-  const rel=[];const seen=new Set();
-  [retrieveBrain(q)].forEach(e=>{if(e&&!seen.has(e.id)){seen.add(e.id);rel.push(e.text.slice(0,300))}});
-  if(rel.length)parts.push("Notas relevantes:\n"+rel.join("\n---\n"));
+  const parts=["Fecha de hoy: "+new Date().toLocaleDateString("es-ES",{weekday:"long",year:"numeric",month:"long",day:"numeric"})+"."];
+  if(memoria.length)parts.push("Lo que sabes de Marc:\n"+memoria.slice(0,8).map(m=>"- "+m).join("\n"));
+  const rel=[],seen=new Set();
+  const e=retrieveBrain(q);if(e&&!seen.has(e.id)){seen.add(e.id);rel.push(e.text.slice(0,400))}
+  if(rel.length)parts.push("Notas que te enseñó Marc (úsalas si aplican):\n"+rel.join("\n---\n"));
   return parts.join("\n\n");
 }
-const SYS="Eres YARVIS, el asistente personal e independiente de Marc. Responde en español, claro y conciso (máximo unas pocas frases salvo que pidan más). Usa la memoria y notas si son relevantes. Si no estás seguro, dilo con honestidad.";
+const SYS="Eres YARVIS, el asistente personal e independiente de Marc — actúa como un asistente general capaz y directo, al estilo de Claude. Responde en español con precisión y sin rodeos. Usa la memoria y las notas de Marc cuando sean relevantes. Cuando la pregunta dependa de información actual, cambiante o que no sepas con certeza (noticias, mercados, precios, fechas, datos recientes), USA la herramienta de búsqueda web y cita las fuentes. No inventes: si algo no lo sabes ni lo encuentras, dilo.";
 async function askCloud(q){
   if(!cfg.on)return null;
-  if(!cfg.key)return{error:"Activa el cerebro extendido y pega tu API key en ⚙ CEREBRO."};
+  if(!cfg.key)return{error:"Enciende el cerebro extendido y pega tu API key de Anthropic en CEREBRO."};
   const ctx=buildContext(q);
-  const body={model:cfg.model,max_tokens:Math.max(64,Math.min(2000,cfg.max|0||400)),system:SYS,
+  const body={model:cfg.model,max_tokens:Math.max(256,Math.min(4000,(cfg.max|0)||1024)),system:SYS,
     messages:[{role:"user",content:(ctx?ctx+"\n\n":"")+"Pregunta de Marc: "+q}]};
+  if(cfg.web)body.tools=[{type:"web_search_20250305",name:"web_search",max_uses:4}];
   try{
     const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",
       headers:{"x-api-key":cfg.key,"anthropic-version":"2023-06-01","content-type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
       body:JSON.stringify(body)});
-    if(!r.ok){let t="";try{t=await r.text()}catch(e){}return{error:"Error "+r.status+(t?" · "+t.slice(0,140):"")}}
-    const d=await r.json();const txt=(d.content&&d.content[0]&&d.content[0].text)?d.content[0].text:"(sin respuesta)";
-    return{text:txt,usage:d.usage||null};
-  }catch(e){return{error:"Sin conexión con el modelo. El cerebro extendido solo funciona al abrir YARVIS como archivo local (la vista previa bloquea la red)."}}
+    if(!r.ok){let t="";try{t=await r.text()}catch(e){}return{error:"Error "+r.status+(t?" · "+t.slice(0,160):"")}}
+    const d=await r.json();
+    let text="",cites=[];
+    (d.content||[]).forEach(b=>{if(b.type==="text"){text+=b.text;
+      if(b.citations)b.citations.forEach(c=>{if(c.url)cites.push({url:c.url,title:c.title||c.url})})}});
+    text=text.trim()||"(sin respuesta)";
+    const seen=new Set(),ded=[];cites.forEach(c=>{if(!seen.has(c.url)){seen.add(c.url);ded.push(c)}});
+    return{text,cites:ded,usage:d.usage||null};
+  }catch(e){return{error:"No pude conectar con el modelo. El cerebro extendido y la búsqueda web solo funcionan al abrir YARVIS como archivo local en tu equipo (la vista previa bloquea la red)."}}
 }
 
 /* ---- chat rendering ---- */
@@ -465,21 +486,31 @@ async function handle(q){
     return emit("<h4>Quién soy</h4><p>Soy <b>YARVIS</b>, tu núcleo personal e independiente. Corro en local, gratis, aprendo con el tiempo y me sé el informe de <b>Zoey OS</b>.</p>","YARVIS",null);
   if(/^(hola|hey|buenas|hi|que tal|como estas)\b/.test(nq))
     return emit("<p>Buenas, Marc. Soy <b>YARVIS</b>. Pregúntame, enséñame algo con <code>aprende:</code> o abre <b>CEREBRO</b> para importar tus documentos.</p>","YARVIS",null);
+  // CLOUD-FIRST: when the extended brain is on, answer like Claude (with web search)
+  if(cfg.on&&cfg.key)return respondCloud(raw);
+  // OFFLINE / free local mode: only answer if we actually know it
   const seed=retrieveSeed(raw);if(seed)return emit(seed.html,seed.src,null);
   const b=retrieveBrain(raw);if(b)return emit(fmt(b.text),(b.source||"aprendido")+" · local · 0 tokens",b.id);
-  // miss -> cloud or invite to teach
-  if(cfg.on){
-    setState(true);
-    const tb=render("ai",'<span class="cursor">consultando cerebro extendido…</span>',false);const tmsg=tb.closest(".msg");
-    const res=await askCloud(raw);tmsg.remove();
-    if(res&&res.text){const id=addLearned(raw,res.text,"cerebro extendido",0);
-      const note=res.usage?" · "+((res.usage.input_tokens||0)+(res.usage.output_tokens||0))+" tokens · guardado":" · guardado";
-      return emit(fmt(res.text),"cerebro extendido"+note,id)}
-    setState(false);
-    const err=res&&res.error?"<p class='src'>"+esc(res.error)+"</p>":"";
-    return emit("<h4>Aún no lo sé</h4><p>No lo tengo en local y el cerebro extendido no respondió.</p>"+err+"<p>Enséñamelo con <code>aprende: …</code> y lo recordaré gratis.</p>","YARVIS",null);
+  return emit("<h4>Aún no lo sé (modo local)</h4><p>En local solo respondo lo que me has enseñado y el informe de Zoey OS — por eso no me lo invento.</p><p>Para responder de <b>cualquier tema y buscar en internet</b> como Claude, enciende el <b>Cerebro extendido</b> en <b>CEREBRO</b> (pega tu API key) y abre YARVIS como archivo local. O enséñame esto con <code>aprende: …</code>.</p>","YARVIS",null);
+}
+async function respondCloud(raw){
+  setState(true);
+  const tb=render("ai",'<span class="cursor">'+(cfg.web?"buscando y razonando…":"pensando…")+'</span>',false);
+  const tmsg=tb.closest(".msg");
+  const res=await askCloud(raw);
+  tmsg.remove();
+  if(res&&res.text){
+    let html=fmt(res.text);
+    if(res.cites&&res.cites.length)html+='<div class="src">FUENTES WEB</div><ul class="cites">'+res.cites.slice(0,6).map(c=>'<li><a href="'+esc(c.url)+'" target="_blank" rel="noopener noreferrer">'+esc(c.title)+'</a></li>').join("")+"</ul>";
+    // cache only stable (non-web) answers so repeats are free; keep web answers fresh
+    let id=null;if(!(res.cites&&res.cites.length))id=addLearned(raw,res.text,"cerebro extendido",0);
+    const toks=res.usage?((res.usage.input_tokens||0)+(res.usage.output_tokens||0)):null;
+    const src=(res.cites&&res.cites.length?"cerebro extendido · web":"cerebro extendido")+(toks!=null?" · "+toks+" tokens":"")+(id?" · guardado":"");
+    return emit(html,src,id);
   }
-  return emit("<h4>Aún no lo sé</h4><p>Eso no está en lo que he aprendido todavía. Enséñamelo con <code>aprende: pregunta :: respuesta</code>, importa un documento en <b>CEREBRO</b>, o activa el <b>cerebro extendido</b> (pocos tokens) para que lo resuelva y lo guarde.</p>","YARVIS",null);
+  setState(false);
+  const err=res&&res.error?"<p class='src'>"+esc(res.error)+"</p>":"";
+  return emit("<h4>No pude responder</h4>"+err+"<p>Comprueba tu API key en <b>CEREBRO</b>, o abre YARVIS como archivo local si estás en la vista previa.</p>","YARVIS",null);
 }
 function command(c){
   const parts=c.trim().split(/\s+/),cmd=norm(parts[0]||""),arg=parts.slice(1).join(" ");
@@ -538,11 +569,14 @@ $("#fileInput").onchange=e=>{const files=[...e.target.files];let total=0,pending
 $("#pasteBtn").onclick=()=>{const t=$("#pasteBox").value.trim();if(!t){toast("Pega algo primero");return}const n=importDoc("nota pegada",t);$("#pasteBox").value="";toast("Aprendidos "+n+" fragmentos")};
 
 /* cloud settings */
-function loadCfgUI(){$("#cloudOn").checked=!!cfg.on;$("#cloudKey").value=cfg.key||"";$("#cloudModel").value=cfg.model;$("#cloudMax").value=cfg.max}
-$("#cloudOn").onchange=e=>{cfg.on=e.target.checked;saveCfg();$("#statePill")&&0;toast(cfg.on?"Cerebro extendido activado":"Cerebro extendido desactivado")};
-$("#cloudKey").onchange=e=>{cfg.key=e.target.value.trim();saveCfg()};
+function loadCfgUI(){$("#cloudOn").checked=!!cfg.on;$("#cloudWeb").checked=!!cfg.web;$("#cloudKey").value=cfg.key||"";$("#cloudModel").value=cfg.model;$("#cloudMax").value=cfg.max}
+function updateNet(){const on=cfg.on&&cfg.key;const net=on&&cfg.web;const p=$("#netPill");
+  p.innerHTML='<span class="led '+(on?"":"warn")+'" style="'+(on?"":"background:#5f594f;box-shadow:none")+'"></span> '+(net?"INTERNET":on?"IA":"SOLO LOCAL")}
+$("#cloudOn").onchange=e=>{cfg.on=e.target.checked;saveCfg();updateNet();toast(cfg.on?"Cerebro extendido activado":"Cerebro extendido desactivado")};
+$("#cloudWeb").onchange=e=>{cfg.web=e.target.checked;saveCfg();updateNet();toast(cfg.web?"Búsqueda web activada":"Búsqueda web desactivada")};
+$("#cloudKey").onchange=e=>{cfg.key=e.target.value.trim();saveCfg();updateNet()};
 $("#cloudModel").onchange=e=>{cfg.model=e.target.value;saveCfg()};
-$("#cloudMax").onchange=e=>{cfg.max=Math.max(64,Math.min(2000,parseInt(e.target.value)||400));e.target.value=cfg.max;saveCfg()};
+$("#cloudMax").onchange=e=>{cfg.max=Math.max(256,Math.min(4000,parseInt(e.target.value)||1024));e.target.value=cfg.max;saveCfg()};
 
 /* backup */
 function mergeBrain(data){let n=0;
@@ -607,16 +641,16 @@ $("#palOpen").onclick=openPal;
 addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();pal.classList.contains("open")?closePal():openPal()}else if(e.key==="Escape"&&pal.classList.contains("open"))closePal()});
 
 /* ---- init ---- */
-loadCfgUI();renderMem();renderBrainStats();
+loadCfgUI();updateNet();renderMem();renderBrainStats();
 const boot=$("#boot");
 const lines=[["> inicializando YARVIS · edición de Marc ...","b"],["  cargando conocimiento base (Zoey OS) ......... OK","ok"],
   ["  cargando cerebro aprendido ("+brain.length+" ítems) ...","ok"],["  memoria propia (local) ....................... OK","ok"],
-  ["  modo: local · gratis · aprende con el tiempo","ok"],["> YARVIS ONLINE · 100% TUYO","b"]];
+  ["  cerebro extendido: "+(cfg.on&&cfg.key?(cfg.web?"INTERNET":"IA"):"apagado"),"ok"],["> YARVIS ONLINE · 100% TUYO","b"]];
 let li=0;
 function restore(){history.forEach(h=>render(h.who,h.html,h.who==="ai",h.id));log.scrollTop=log.scrollHeight}
 function bootStep(){if(li>=lines.length){setTimeout(()=>{boot.classList.add("done");
   if(history.length)restore();
-  else emit("<p>Núcleo en línea. Soy <b>YARVIS</b>: local, gratis y <b>aprendo con el tiempo</b>. Pregúntame, enséñame con <code>aprende:</code> o importa tus documentos en <b>CEREBRO</b>. Para conocimiento de todas las áreas, activa el <b>cerebro extendido</b> (pocos tokens) en ⚙.</p>","YARVIS",null);
+  else emit("<p>Núcleo en línea, Marc. Por defecto voy en <b>modo local gratis</b> y solo respondo lo que sé sin inventar.</p><p>Para que responda de <b>cualquier tema y busque en internet como Claude</b>, abre <b>CEREBRO</b>, enciende el <b>cerebro extendido</b> y pega tu API key. Verás el indicador cambiar a <b>INTERNET</b>.</p>","YARVIS",null);
   },500);return}
   const L=lines[li++];const d=document.createElement("div");if(L[1])d.className=L[1];d.textContent=L[0];boot.appendChild(d);setTimeout(bootStep,reduce?90:300)}
 bootStep();
