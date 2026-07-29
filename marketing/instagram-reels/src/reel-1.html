@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>AstraMedical · Reel 1 — El fin de las salas de espera</title>
+<link rel="stylesheet" href="./base.css">
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="bg-grid"></div>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+
+  <!-- Chrome -->
+  <div class="chrome-top">
+    <div class="brand">
+      <span class="mark">
+        <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <polyline class="ecg-line" style="--len:120" points="5,32 17,32 20,21 23,43 26,28 29,37 32,32 59,32"
+            fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="32" cy="32" r="3.2" fill="#fff"/>
+        </svg>
+      </span>
+      <span class="word">
+        <span class="name"><span class="a">Astra</span><span class="m">Medical</span></span>
+        <span class="tag">Atención inteligente</span>
+      </span>
+    </div>
+  </div>
+  <div class="disclaimer">Herramienta de apoyo · No sustituye el criterio médico</div>
+  <div class="progress"><i></i></div>
+
+  <!-- S1 · Gancho -->
+  <section class="scene" data-dur="3400">
+    <div class="kicker up">Sanidad · 2026</div>
+    <h1 class="headline up d1" style="margin-top:34px">
+      ¿Otra vez <span class="hl">semanas</span> de espera por una simple consulta?
+    </h1>
+    <div class="big-emoji-row up d3" style="margin-top:56px">⏳ 🏥 😮‍💨</div>
+  </section>
+
+  <!-- S2 · Dolor -->
+  <section class="scene" data-dur="3600">
+    <div class="kicker up">El problema</div>
+    <h1 class="headline sm up d1" style="margin-top:30px">Tu tiempo<br>también es <span class="hl2">salud</span>.</h1>
+    <div class="perks" style="margin-top:60px">
+      <div class="pill up d2"><span class="dot" style="background:var(--danger)"></span>Colas interminables</div>
+      <div class="pill up d3"><span class="dot" style="background:var(--warning)"></span>Citas a 3 semanas vista</div>
+      <div class="pill up d4"><span class="dot" style="background:var(--muted)"></span>Visitas que no hacían falta</div>
+    </div>
+  </section>
+
+  <!-- S3 · Solución / cómo -->
+  <section class="scene" data-dur="4000">
+    <div class="kicker up">La solución</div>
+    <h1 class="headline sm up d1" style="margin-top:30px">Resuélvelo <span class="hl">antes</span> de salir de casa.</h1>
+    <div class="perks" style="margin-top:64px">
+      <div class="step up d2">
+        <div class="num">1</div>
+        <div class="txt"><div class="t">Cuéntale tu caso</div><div class="s">Describe síntomas o sube una imagen</div></div>
+      </div>
+      <div class="step up d3">
+        <div class="num">2</div>
+        <div class="txt"><div class="t">La IA lo analiza</div><div class="s">Triaje clínico asistido en segundos</div></div>
+      </div>
+      <div class="step up d4">
+        <div class="num">3</div>
+        <div class="txt"><div class="t">Informe al instante</div><div class="s">Hallazgos, urgencia y recomendaciones</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 · Marca + CTA (hero) -->
+  <section class="scene hero" data-dur="4400">
+    <div style="text-align:center">
+      <span class="mark pop" style="width:150px;height:150px;border-radius:38px;margin:0 auto;display:grid;place-items:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)">
+        <svg viewBox="0 0 64 64" fill="none" style="width:104px;height:104px" aria-hidden="true">
+          <polyline class="ecg-line" style="--len:120" points="5,32 17,32 20,21 23,43 26,28 29,37 32,32 59,32"
+            fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="32" cy="32" r="3.2" fill="#fff"/>
+        </svg>
+      </span>
+      <h1 class="headline up d1" style="margin-top:46px;font-size:104px">Menos colas.<br>Mejor <span style="color:#a7f3d0">atención</span>.</h1>
+      <div class="perks up d2" style="align-items:center;margin-top:52px;gap:22px">
+        <div class="perk" style="color:#fff"><span class="ic" style="background:rgba(255,255,255,.16)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </span>Disponible 24/7</div>
+        <div class="perk" style="color:#fff"><span class="ic" style="background:rgba(255,255,255,.16)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </span>Evita visitas innecesarias</div>
+      </div>
+      <div class="cta-btn up d3" style="margin-top:64px">
+        Pruébalo gratis
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+      <div class="url-chip up d4" style="margin-top:40px">astramedical.vercel.app</div>
+    </div>
+  </section>
+</div>
+<script src="./reel.js"></script>
+</body>
+</html>

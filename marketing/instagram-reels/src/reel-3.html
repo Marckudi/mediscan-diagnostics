@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>AstraMedical · Reel 3 — Antes vs. ahora</title>
+<link rel="stylesheet" href="./base.css">
+<style>
+  .cmp { display: flex; flex-direction: column; gap: 32px; margin-top: 60px; }
+  .cmp .row { display: flex; flex-direction: column; gap: 10px; padding: 42px 48px; border-radius: 32px; }
+  .cmp .row.old { background: #eef2f7; border: 1px solid #e2e8f0; }
+  .cmp .row.new { background: var(--grad-brand); color: #fff; box-shadow: 0 26px 50px -22px rgba(79,70,229,.55); }
+  .cmp .lab { font-family: 'Inter',sans-serif; font-weight: 600; font-size: 27px; letter-spacing: .18em; text-transform: uppercase; }
+  .cmp .row.old .lab { color: var(--muted); }
+  .cmp .row.new .lab { color: #bae6fd; }
+  .cmp .val { font-weight: 800; font-size: 62px; letter-spacing: -.02em; }
+  .cmp .row.old .val { color: #64748b; }
+  .grid4 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 60px; }
+  .tile { background: #fff; border: 1px solid var(--border); border-radius: 30px; padding: 40px; box-shadow: var(--shadow-md); }
+  .tile .ic { width: 96px; height: 96px; border-radius: 26px; display: grid; place-items: center; margin-bottom: 26px; }
+  .tile .ic svg { width: 52px; height: 52px; }
+  .tile .t { font-weight: 800; font-size: 42px; letter-spacing: -.02em; }
+  .tile .s { font-weight: 500; font-size: 28px; color: var(--ink-2); margin-top: 10px; line-height: 1.35; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="bg-grid"></div>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+
+  <div class="chrome-top">
+    <div class="brand">
+      <span class="mark">
+        <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <polyline class="ecg-line" style="--len:120" points="5,32 17,32 20,21 23,43 26,28 29,37 32,32 59,32"
+            fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="32" cy="32" r="3.2" fill="#fff"/>
+        </svg>
+      </span>
+      <span class="word">
+        <span class="name"><span class="a">Astra</span><span class="m">Medical</span></span>
+        <span class="tag">Atención inteligente</span>
+      </span>
+    </div>
+  </div>
+  <div class="disclaimer">Herramienta de apoyo · No sustituye el criterio médico</div>
+  <div class="progress"><i></i></div>
+
+  <!-- S1 · Gancho -->
+  <section class="scene" data-dur="3000">
+    <div class="kicker up">Sanidad reinventada</div>
+    <h1 class="headline up d1" style="margin-top:34px">Imagina una<br>sanidad <span class="hl">sin esperas</span>.</h1>
+  </section>
+
+  <!-- S2 · Antes vs ahora -->
+  <section class="scene" data-dur="3800">
+    <div class="kicker up">El cambio</div>
+    <div class="cmp">
+      <div class="row old up d1">
+        <span class="lab">Antes</span>
+        <span class="val">Semanas para una cita 😮‍💨</span>
+      </div>
+      <div class="row new up d3">
+        <span class="lab">Con AstraMedical</span>
+        <span class="val">Orientación en segundos ⚡</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3 · Ventajas -->
+  <section class="scene" data-dur="3800">
+    <div class="kicker up">Por qué funciona</div>
+    <div class="grid4">
+      <div class="tile up d1">
+        <div class="ic" style="background:#e0f2fe"><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3.6"/></svg></div>
+        <div class="t">Triaje con IA</div>
+        <div class="s">Análisis clínico asistido al instante</div>
+      </div>
+      <div class="tile up d2">
+        <div class="ic" style="background:#ede9fe"><svg viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="t">24/7</div>
+        <div class="s">Cuando lo necesites, sin horarios</div>
+      </div>
+      <div class="tile up d3">
+        <div class="ic" style="background:#dcfce7"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <div class="t">Menos visitas</div>
+        <div class="s">Evita desplazamientos innecesarios</div>
+      </div>
+      <div class="tile up d4">
+        <div class="ic" style="background:#fef3c7"><svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+        <div class="t">Tus datos, seguros</div>
+        <div class="s">Privacidad primero, siempre</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 · CTA hero -->
+  <section class="scene hero" data-dur="3800" style="justify-content:center;text-align:center">
+    <div>
+      <span class="mark pop" style="width:140px;height:140px;border-radius:36px;margin:0 auto;display:grid;place-items:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)">
+        <svg viewBox="0 0 64 64" fill="none" style="width:98px;height:98px" aria-hidden="true">
+          <polyline class="ecg-line" style="--len:120" points="5,32 17,32 20,21 23,43 26,28 29,37 32,32 59,32"
+            fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="32" cy="32" r="3.2" fill="#fff"/>
+        </svg>
+      </span>
+      <h1 class="headline up d1" style="margin-top:44px;font-size:104px">La salud,<br>a tu <span style="color:#a7f3d0">ritmo</span>.</h1>
+      <div class="cta-btn up d2" style="margin-top:56px">
+        Entra ya
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+      <div class="url-chip up d3" style="margin-top:40px">astramedical.vercel.app</div>
+    </div>
+  </section>
+</div>
+<script src="./reel.js"></script>
+</body>
+</html>

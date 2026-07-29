@@ -1,0 +1,16 @@
+{
+  "name": "astramedical-instagram-reels",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Reels promocionales 9:16 de AstraMedical (HTML animado → MP4)",
+  "scripts": {
+    "record": "node record.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.56.1"
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0"
+  }
+}

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>AstraMedical · Reel 2 — Míralo funcionando</title>
+<link rel="stylesheet" href="./base.css">
+<style>
+  /* Mockup de dispositivo específico de este reel */
+  .phone {
+    width: 720px; height: 1440px; margin: 0 auto;
+    background: #fff; border-radius: 72px;
+    border: 14px solid #0f172a;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden; position: relative;
+  }
+  .phone .notch {
+    position: absolute; top: 22px; left: 50%; transform: translateX(-50%);
+    width: 210px; height: 34px; background: #0f172a; border-radius: 20px; z-index: 5;
+  }
+  .app-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 74px 44px 26px; border-bottom: 1px solid var(--border);
+  }
+  .app-brand { display: flex; align-items: center; gap: 16px; }
+  .app-brand .m {
+    width: 58px; height: 58px; border-radius: 16px; background: var(--grad-brand);
+    display: grid; place-items: center;
+  }
+  .app-brand .m svg { width: 40px; height: 40px; }
+  .app-brand .nm { font-weight: 800; font-size: 32px; letter-spacing: -.02em; }
+  .app-brand .nm .a { color: var(--primary); } .app-brand .nm .m2 { color: var(--secondary); }
+  .chip-live {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;
+    border-radius: 999px; padding: 12px 22px; font-family: 'Inter',sans-serif;
+    font-weight: 600; font-size: 24px;
+  }
+  .chip-live .d { width: 16px; height: 16px; border-radius: 50%; background: #10b981; }
+  .app-body { padding: 46px 44px; }
+  .app-title { font-weight: 800; font-size: 46px; letter-spacing: -.02em; }
+  .app-sub { font-weight: 500; font-size: 30px; color: var(--ink-2); margin-top: 12px; }
+
+  .drop {
+    margin-top: 40px; border: 3px dashed #bcd3e8; border-radius: 32px;
+    background: #f8fbff; padding: 74px 30px; text-align: center;
+  }
+  .drop .ic {
+    width: 128px; height: 128px; border-radius: 32px; margin: 0 auto 26px;
+    background: #e0f2fe; display: grid; place-items: center;
+  }
+  .drop .ic svg { width: 66px; height: 66px; }
+  .drop .t { font-weight: 700; font-size: 34px; color: var(--ink); }
+  .drop .s { font-weight: 500; font-size: 26px; color: var(--muted); margin-top: 10px; }
+  .field {
+    margin-top: 34px; border: 2px solid var(--border); border-radius: 22px;
+    padding: 30px 32px; font-weight: 500; font-size: 30px; color: var(--muted);
+  }
+  .btn-primary {
+    margin-top: 34px; width: 100%; background: var(--primary); color: #fff;
+    border-radius: 22px; padding: 34px; text-align: center;
+    font-weight: 800; font-size: 36px;
+    box-shadow: 0 18px 34px -14px rgba(2,132,199,.6);
+  }
+
+  .loader { text-align: center; padding: 150px 30px; }
+  .ring {
+    width: 150px; height: 150px; margin: 0 auto 46px; border-radius: 50%;
+    border: 14px solid #e0f2fe; border-top-color: var(--primary);
+    animation: spin 1s linear infinite;
+  }
+  .loader .t { font-weight: 800; font-size: 44px; }
+  .loader .s { font-weight: 500; font-size: 30px; color: var(--muted); margin-top: 14px; }
+
+  .rcard { border: 1px solid var(--border); border-radius: 28px; padding: 36px 38px; margin-top: 26px; box-shadow: var(--shadow-md); }
+  .rcard .rt { display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 30px; color: var(--ink-2); }
+  .rcard .rt svg { width: 34px; height: 34px; color: var(--primary); }
+  .rcard .rb { font-weight: 500; font-size: 31px; color: var(--ink-2); line-height: 1.4; margin-top: 18px; }
+  .finding { background: #f8fafc; border: 1px solid #eef2f7; border-radius: 20px; padding: 26px 28px; margin-top: 18px; }
+  .finding .row { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+  .finding .desc { font-weight: 700; font-size: 30px; color: var(--ink); }
+  .badge { font-family:'Inter',sans-serif; font-weight: 600; font-size: 24px; padding: 8px 20px; border-radius: 999px; white-space: nowrap; }
+  .badge.low { background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; }
+  .finding .meta { font-family:'Inter',sans-serif; font-weight: 600; font-size: 24px; color: var(--muted); margin-top: 12px; }
+  .reco { display: flex; align-items: flex-start; gap: 16px; font-weight: 600; font-size: 30px; color: var(--ink-2); margin-top: 18px; }
+  .reco svg { width: 34px; height: 34px; color: var(--accent); flex: 0 0 auto; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="bg-grid"></div>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+
+  <div class="chrome-top">
+    <div class="brand">
+      <span class="mark">
+        <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <polyline class="ecg-line" style="--len:120" points="5,32 17,32 20,21 23,43 26,28 29,37 32,32 59,32"
+            fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="32" cy="32" r="3.2" fill="#fff"/>
+        </svg>
+      </span>
+      <span class="word">
+        <span class="name"><span class="a">Astra</span><span class="m">Medical</span></span>
+        <span class="tag">Atención inteligente</span>
+      </span>
+    </div>
+  </div>
+  <div class="disclaimer">Herramienta de apoyo · No sustituye el criterio médico</div>
+  <div class="progress"><i></i></div>
+
+  <!-- S1 · Gancho -->
+  <section class="scene" data-dur="3200" style="justify-content:center;text-align:center">
+    <div class="kicker up" style="align-self:center">En 30 segundos</div>
+    <h1 class="headline up d1" style="margin-top:34px">Cuidarte nunca<br>fue tan <span class="hl">rápido</span>.</h1>
+    <p class="lead up d3" style="margin-top:40px">Mira cómo funciona AstraMedical 👇</p>
+  </section>
+
+  <!-- S2 · Subir consulta -->
+  <section class="scene" data-dur="3600" style="justify-content:center">
+    <div class="phone pop">
+      <div class="notch"></div>
+      <div class="app-head">
+        <div class="app-brand"><span class="m"><svg viewBox="0 0 64 64" fill="none"><polyline points="5,32 17,32 20,21 23,43 26,28 29,37 32,32 59,32" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="32" r="3.4" fill="#fff"/></svg></span><span class="nm"><span class="a">Astra</span><span class="m2">Medical</span></span></div>
+        <span class="chip-live"><span class="d"></span>IA activa</span>
+      </div>
+      <div class="app-body">
+        <div class="app-title">Nueva consulta</div>
+        <div class="app-sub">Sin cita. Sin sala de espera.</div>
+        <div class="drop">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="4"/></svg></div>
+          <div class="t">Sube una foto o describe tus síntomas</div>
+          <div class="s">JPG · PNG · o texto</div>
+        </div>
+        <div class="field">Escribe el contexto clínico…</div>
+        <div class="btn-primary">Analizar con IA</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3 · Analizando -->
+  <section class="scene" data-dur="3400" style="justify-content:center">
+    <div class="phone pop">
+      <div class="notch"></div>
+      <div class="app-head">
+        <div class="app-brand"><span class="m"><svg viewBox="0 0 64 64" fill="none"><polyline points="5,32 17,32 20,21 23,43 26,28 29,37 32,32 59,32" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="32" r="3.4" fill="#fff"/></svg></span><span class="nm"><span class="a">Astra</span><span class="m2">Medical</span></span></div>
+        <span class="chip-live"><span class="d"></span>IA activa</span>
+      </div>
+      <div class="app-body">
+        <div class="loader">
+          <div class="ring"></div>
+          <div class="t">Analizando…</div>
+          <div class="s">El agente de IA está procesando tu caso</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 · Informe -->
+  <section class="scene" data-dur="4200" style="justify-content:center">
+    <div class="phone pop">
+      <div class="notch"></div>
+      <div class="app-head">
+        <div class="app-brand"><span class="m"><svg viewBox="0 0 64 64" fill="none"><polyline points="5,32 17,32 20,21 23,43 26,28 29,37 32,32 59,32" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="32" r="3.4" fill="#fff"/></svg></span><span class="nm"><span class="a">Astra</span><span class="m2">Medical</span></span></div>
+        <span class="chip-live"><span class="d"></span>IA activa</span>
+      </div>
+      <div class="app-body">
+        <div class="rcard">
+          <div class="rt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/></svg>Resumen clínico</div>
+          <div class="rb">Sin signos de alarma. Cuadro leve compatible con proceso autolimitado.</div>
+          <div class="finding">
+            <div class="row"><div class="desc">Hallazgo principal</div><span class="badge low">Leve</span></div>
+            <div class="meta">Confianza del modelo · 92%</div>
+          </div>
+          <div class="reco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Hidratación y reposo. Reevaluar en 48 h.</div>
+          <div class="reco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>No requiere visita presencial urgente.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S5 · CTA hero -->
+  <section class="scene hero" data-dur="3800" style="justify-content:center;text-align:center">
+    <div>
+      <div class="kicker up" style="align-self:center">Tu médico de bolsillo</div>
+      <h1 class="headline up d1" style="margin-top:34px;font-size:100px">Empieza <span style="color:#a7f3d0">hoy</span>.</h1>
+      <div class="cta-btn up d2" style="margin-top:56px">
+        Probar AstraMedical
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+      <div class="url-chip up d3" style="margin-top:40px">astramedical.vercel.app</div>
+    </div>
+  </section>
+</div>
+<script src="./reel.js"></script>
+</body>
+</html>
